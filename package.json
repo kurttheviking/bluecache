@@ -1,0 +1,31 @@
+{
+  "name": "bluecache",
+  "author": "AgileMD <hello@agilemd.com>",
+  "contributors": [
+    "agilekurt <kurt@agilemd.com>"
+  ],
+  "version": "0.0.0",
+  "description": "lru-cache via bluebird",
+  "keywords": [
+    "cache",
+    "deferred",
+    "promise",
+    "promises-a",
+    "promises-aplus"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha"
+  },
+  "repository": "git@github.com:agilemd/bluecache.git",
+  "dependencies": {
+    "bluebird": "1.0.0",
+    "lru-cache": "2.5.0"
+  },
+  "devDependencies": {
+    "chai": "1.8.1",
+    "mocha": "1.17.0"
+  },
+  "readmeFilename": "README.md",
+  "license": "MIT"
+}
