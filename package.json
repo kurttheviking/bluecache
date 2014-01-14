@@ -1,11 +1,12 @@
 {
   "name": "bluecache",
+  "description": "lru-cache via bluebird",
+  "version": "0.0.0",
   "author": "AgileMD <hello@agilemd.com>",
   "contributors": [
-    "agilekurt <kurt@agilemd.com>"
+    "agilekurt <kurt@agilemd.com>",
+    "agilemd <doc@agilemd.com>"
   ],
-  "version": "0.0.0",
-  "description": "lru-cache via bluebird",
   "keywords": [
     "cache",
     "deferred",
