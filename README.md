@@ -4,6 +4,10 @@ bluecache
 [lru-cache](https://github.com/isaacs/node-lru-cache/issues) via [bluebird](https://github.com/petkaantonov/bluebird)
 
 
+<a href="http://promisesaplus.com/">
+    <img src="http://promisesaplus.com/assets/logo-small.png" alt="Promises/A+ logo" title="Promises/A+ 1.0 compliant" align="right" />
+</a>
+
 ### Motivation
 
 Provide a API abstraction (with, ready for this...arity parity) of LRU Cache to make it easier to use within a Promise-based architecture.
@@ -14,19 +18,19 @@ Provide a API abstraction (with, ready for this...arity parity) of LRU Cache to 
 ```
 var BlueLRU = require("bluecache");
 var options = {
-	max: 500,
-    maxAge: 1000 * 60 * 60
+  max: 500,
+  maxAge: 1000 * 60 * 60
 };
 
 var cache = BlueLRU(options);
 
 cache.set("key", "value")
-
-cache.get("key").then(function (value) {
-    console.log("key => ", value);  // "key => value"
-});
-
-cache.reset();
+  .then(function () {
+    return cache.get("key")
+  })
+  .then(function (_value) {
+    console.log("key => ", _value);  // "key => value"
+  });
 ```
 
 
