@@ -1,7 +1,7 @@
 {
   "name": "bluecache",
   "description": "lru-cache via bluebird",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "AgileMD <hello@agilemd.com>",
   "contributors": [
     "agilekurt <kurt@agilemd.com>",
@@ -9,6 +9,7 @@
   ],
   "keywords": [
     "cache",
+    "in-memory",
     "deferred",
     "promise",
     "promises-a",
