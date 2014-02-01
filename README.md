@@ -147,6 +147,8 @@ cache.set(key, value)
 	}, function (_errorKey) {
 		console.log('rejection is on, so the missing key is = ' + _errorKey);
 	});
+
+// => "rejection is on, so the missing key is = jaeger"
 ```
 
 Combine these concepts with `Promise.all` as well as `Array.map` and friends and you've got some solid functional programming afoot.
