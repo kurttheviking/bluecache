@@ -1,12 +1,12 @@
+<a href="http://promisesaplus.com/">
+    <img src="http://promisesaplus.com/assets/logo-small.png" alt="Promises/A+ logo" title="Promises/A+ 1.0 compliant" align="right" />
+</a>
+
 bluecache
 =========
 
 [lru-cache](https://github.com/isaacs/node-lru-cache/issues) via [bluebird](https://github.com/petkaantonov/bluebird)
 
-
-<a href="http://promisesaplus.com/">
-    <img src="http://promisesaplus.com/assets/logo-small.png" alt="Promises/A+ logo" title="Promises/A+ 1.0 compliant" align="right" />
-</a>
 
 ### Motivation
 
