@@ -144,4 +144,4 @@ Combine these concepts with `Promise.all` as well as `Array.map` and friends and
 
 | bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) | Comment |
 | --- | :--- | :--- | :--- |
-| 0.1.0 | 1.0.1 | 2.5.0 | |
+| 0.1.x | 1.0.1 | 2.5.0 | |
