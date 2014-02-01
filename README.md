@@ -152,6 +152,11 @@ cache.set(key, value)
 Combine these concepts with `Promise.all` as well as `Array.map` and friends and you've got some solid functional programming afoot.
 
 
+### Contribute
+
+PRs are welcome! For bugs, please include a failing test which passes when your PR is applied.
+
+
 ### Release History
 
 | bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) |
