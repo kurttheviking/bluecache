@@ -20,11 +20,11 @@
   },
   "repository": "git@github.com:agilemd/bluecache.git",
   "dependencies": {
-    "bluebird": "1.0.0",
+    "bluebird": "1.0.1",
     "lru-cache": "2.5.0"
   },
   "devDependencies": {
-    "chai": "1.8.1",
+    "chai": "1.9.0",
     "mocha": "1.17.0"
   },
   "readmeFilename": "README.md",
