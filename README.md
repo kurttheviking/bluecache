@@ -50,7 +50,7 @@ Options are passed directly to LRU Cache at instantiation; the below documentati
 
 **set(key, value || Promise(value))**
 
-Update the cache `key` to value `value` directly or pass a promise for a future `value`; updates the "recently-used"-ness of the key. Returns a promise that resolves to the set value.
+Update the cache `key` to value `value` directly or pass a promise for a future `value`; updates the "recently-used"-ness of the key; returns a promise that resolves to the set value.
 
 ```
 var promisedValue = new Promise(function (resolve, reject) {
