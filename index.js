@@ -18,8 +18,9 @@ function BlueCache (options) {
 BlueCache.prototype.set = function (key, value) {
   var _this = this;
 
-  return new Promise(function (resolve, reject) {
-    resolve(_this.__cache.set(key, value));
+  return Promise.resolve(value).then(function (_value) {
+    _this.__cache.set(key, _value);
+    return _value;
   });
 };
 

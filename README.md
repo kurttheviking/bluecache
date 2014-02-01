@@ -48,9 +48,21 @@ Options are passed directly to LRU Cache at instantiation; the below documentati
 
 ### API
 
-**set(key, value)**
+**set(key, value || Promise(value))**
 
-Updates the cached `key` to value `value`; updates the "recently-used"-ness of the key. Returns a promise that resolves true.
+Update the cache `key` to value `value` directly or pass a promise for a future `value`; updates the "recently-used"-ness of the key. Returns a promise that resolves to the set value.
+
+```
+var promisedValue = new Promise(function (resolve, reject) {
+	setTimeout(function () {
+		resolve('value');
+	}, 500); 
+});
+
+cache.set('key', promisedValue).then(function (_setValue) {
+	console.log(_setValue);  // => "value"
+});
+```
 
 
 **get(key)**
@@ -142,6 +154,6 @@ Combine these concepts with `Promise.all` as well as `Array.map` and friends and
 
 ### Release History
 
-| bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) | Comment |
-| --- | :--- | :--- | :--- |
-| 0.1.x | 1.0.1 | 2.5.0 | |
+| bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) |
+| --- | :--- | :--- |
+| 0.1.x | 1.0.1 | 2.5.0 |

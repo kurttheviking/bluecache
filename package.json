@@ -1,7 +1,7 @@
 {
   "name": "bluecache",
   "description": "lru-cache via bluebird",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "AgileMD <hello@agilemd.com>",
   "contributors": [
     "agilekurt <kurt@agilemd.com>",

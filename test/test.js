@@ -34,6 +34,36 @@ describe('bluecache ->', function () {
     });
   });
 
+  describe('sets ->', function () {
+    var bcache = BlueLRU();
+
+    var key = 'jaeger';
+    var value = 'mark iv';
+
+    var promisedValue = new Promise(function (resolve, reject) {
+      return resolve(value);
+    });
+    var observedValuePre;
+    var observedValuePost;
+
+    beforeEach(function (done) {
+      bcache.set(key, promisedValue)
+        .then(function (_value) {
+          observedValuePre = _value;
+          return bcache.get(key);
+        })
+        .then(function (_value) {
+          observedValuePost = _value;
+          done();
+        });
+    });
+   
+    it('a resolved promise', function () {
+      chai.expect(observedValuePre).equals(value);
+      chai.expect(observedValuePost).equals(value);
+    });
+  });
+
   describe('deletes ->', function () {
     var bcache = BlueLRU();
 
@@ -82,7 +112,7 @@ describe('bluecache ->', function () {
           observedValue = _value;
           done();
         }, function (_errorKey) {
-          observedValue = _error;
+          observedValue = _errorKey;
           done();
         });
     });
@@ -205,7 +235,7 @@ describe('bluecache ->', function () {
     var value1 = 'mark iv';
 
     var key2 = 'keiju';
-    var value2 = 'kaiceph';
+    var value2 = 'gamera';
 
     lcache.set(key1, value1);
     lcache.set(key2, value2);
