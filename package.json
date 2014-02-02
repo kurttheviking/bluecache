@@ -1,6 +1,6 @@
 {
   "name": "bluecache",
-  "description": "lru-cache via bluebird",
+  "description": "In-memory, Promises/A+ lru-cache via bluebird",
   "version": "0.1.5",
   "author": "AgileMD <hello@agilemd.com>",
   "contributors": [
