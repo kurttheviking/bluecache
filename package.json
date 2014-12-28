@@ -1,7 +1,7 @@
 {
   "name": "bluecache",
   "description": "In-memory, read-through, Promises/A+, lru-cache",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "kurttheviking <kurttheviking@outlook.com>",
   "contributors": [
     "kurttheviking <kurttheviking@outlook.com>"
