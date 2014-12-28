@@ -5,12 +5,12 @@
 bluecache
 =========
 
-In-memory, read-through, Promises/A+, [lru-cache](https://github.com/isaacs/node-lru-cache/issues) via [bluebird](https://github.com/petkaantonov/bluebird)
+In-memory, read-through, Promises/A+, [lru-cache](https://github.com/isaacs/node-lru-cache) via [bluebird](https://github.com/petkaantonov/bluebird)
 
 
 ### Usage
 
-First, instantiate the cache, passing [options](https://github.com/kurttheviking/bluecache#Options) if necessary.
+First, instantiate the cache, passing [options](https://github.com/kurttheviking/bluecache#options) if necessary.
 
 ```
 var BlueLRU = require("bluecache");
@@ -36,11 +36,11 @@ cache('key', function () {
 
 ### Options
 
-Options are passed directly to [lru-cache](https://github.com/isaacs/node-lru-cache/issues#options) at instantiation
+Options are passed directly to [lru-cache](https://github.com/isaacs/node-lru-cache#options) at instantiation
 
 - `max`: The maximum size of the cache, checked by applying the length function to all values in the cache
 - `maxAge`: Maximum age in ms; lazily enforced; expired keys will return `undefined`
-- `length`: Function called to calculate the length of stored items (e.g. `function(n) { return n.length; }`); defaults to `function(n) { return 1; }`
+- `length`: Function called to calculate the length of stored items (e.g. `function (n) { return n.length; }`); defaults to `function (n) { return 1; }`
 - `dispose`: Function called on items immediately before they are dropped from the cache; called with parameters (`key`, `value`)
 - `stale`: Allow the cache to return the stale (expired via `MaxAge`) value before deleting it
 
@@ -74,11 +74,11 @@ Note: `ms` is milliseconds elapsed between cache invocation and final resolution
 
 ### API
 
-**cache(key, promiseFn)**
+**cache(key, dataFunction)**
 
-Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `promiseFn` is resolved to its underlying value before being set in the cache and returned. (To support advanced cases, the key can also be a Promise for a String.)
+Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `dataFunction` is executed and the returned Promise resolved to its underlying value before being set in the cache and returned. (To support advanced cases, the key can also be a Promise for a String.)
 
-If either `key` or `promiseFn` are missing, the cache instance returns a rejected promise.
+A rejected promise is returned if either `key` or `dataFunction` are missing.
 
 
 **cache.del(key)**
@@ -88,7 +88,7 @@ Returns a promise that resolves to `undefined` after deleting `key` from the cac
 
 **cache.on(eventName, eventHandler)**
 
-`eventName` is a string, currently either `cache:hit` or `cache:miss`. `eventHandler` is a function which responds to the data provided by the target event.
+`eventName` is a string, corresponding to a [supported event](https://github.com/kurttheviking/bluecache#emitted-events). `eventHandler` is a function which responds to the data provided by the target event.
 
 ```
 cache.on('cache:hit', function (data) {
@@ -109,7 +109,7 @@ PRs are welcome! For bugs, please include a failing test which passes when your 
 
 ### Release history
 
-The `0.1.x` line focused on airity parity with the underlying lru-cache. However, Bluebird promisification now makes that type of approach unnecessary.  The `0.2.x` refocuses bluecache on implementing lru-cache as a more functionally-oriented, read-through, Promises/A+ module.
+The `0.1.x` versions focused on API parity with the underlying lru-cache. However, [Bluebird promisification](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisification) makes that use case unnecessary (though perhaps a bit more complicated). The `0.2.x`+ versions refocus bluecache on implementing lru-cache as a more functionally-oriented, read-through, Promises/A+ module.
 
 | bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) |
 | --- | :--- | :--- |
