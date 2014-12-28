@@ -22,7 +22,7 @@ var options = {
 var cache = BlueLRU(options);
 ```
 
-Traditional LRU cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a String for the cache key and a Promise-returning function which resolves to the value to store in the cache. The cached value can be of any type. (To support advanced cases, the key can also be a Promise for a String.)
+Traditional LRU cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a String for the cache key and a Promise-returning function which resolves to the value to store in the cache. The cached value can be of any type.
 
 ```
 cache('key', function () {
@@ -76,7 +76,7 @@ Note: `ms` is milliseconds elapsed between cache invocation and final resolution
 
 **cache(key, promiseFn)**
 
-Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated. If the key does not exist, the `promiseFn` is first resolved to a value which is then set within the LRU cache and returned.
+Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `promiseFn` is resolved to its underlying value before being set in the cache and returned. (To support advanced cases, the key can also be a Promise for a String.)
 
 If either `key` or `promiseFn` are missing, the cache instance returns a rejected promise.
 
@@ -112,4 +112,4 @@ PRs are welcome! For bugs, please include a failing test which passes when your 
 | bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) |
 | --- | :--- | :--- |
 | 0.1.x | 1.0.1 | 2.5.0 |
-| 0.2.x | 2
+| 0.2.x | 2.3.11 | 2.5.0 |
