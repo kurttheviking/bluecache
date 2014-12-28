@@ -109,6 +109,8 @@ PRs are welcome! For bugs, please include a failing test which passes when your 
 
 ### Release history
 
+The `0.1.x` line focused on airity parity with the underlying lru-cache. However, Bluebird promisification now makes that type of approach unnecessary.  The `0.2.x` refocuses bluecache on implementing lru-cache as a more functionally-oriented, read-through, Promises/A+ module.
+
 | bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) |
 | --- | :--- | :--- |
 | 0.1.x | 1.0.1 | 2.5.0 |
