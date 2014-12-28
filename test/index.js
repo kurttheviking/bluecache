@@ -38,12 +38,12 @@ describe('bluecache ->', function () {
     });
 
     it('like lru-cache', function () {
-      chai.expect(observedValue).equals(expectedValue);
+      chai.expect(observedValue).to.equal(expectedValue);
     });
 
     it('saves the value for future calls', function () {
-      chai.expect(isCached).to.be.true;
-      chai.expect(cachedValue).equals(expectedValue);
+      chai.expect(isCached).to.equal(true);
+      chai.expect(cachedValue).to.equal(expectedValue);
     });
   });
 
@@ -70,7 +70,7 @@ describe('bluecache ->', function () {
     });
 
     it('like lru-cache', function () {
-      chai.expect(observedValue).equals(expectedValue);
+      chai.expect(observedValue).to.equal(expectedValue);
     });
   });
 
@@ -133,11 +133,68 @@ describe('bluecache ->', function () {
     });
 
     it('and returns undefined', function () {
-      chai.expect(observedResponse).to.be.undefined;
+      chai.expect(observedResponse).to.equal(undefined);
     });
 
     it('and empties the underlying keyset', function () {
-      chai.expect(observedKeys.length).equals(0);
+      chai.expect(observedKeys.length).to.equal(0);
+    });
+  });
+
+  describe('handles errors ->', function () {
+    var bcache = new BlueLRU();
+
+    var key = 'jaeger';
+    var valueFn = function () {
+      return new BPromise(function () {
+        throw new Error('processing error');
+      });
+    };
+
+    var cachedValue;
+    var isPropegatedError;
+
+    beforeEach(function (done) {
+      bcache(key, valueFn).then(function () {
+        cachedValue = bcache._lrucache.get(key);
+      })
+      .catch(function () {
+        isPropegatedError = true;
+        done();
+      });
+    });
+
+    it('avoids setting on error within promise', function () {
+      chai.expect(isPropegatedError).to.equal(true);
+      chai.expect(cachedValue).to.equal(undefined);
+    });
+  });
+
+  describe('handles errors ->', function () {
+    var bcache = new BlueLRU();
+
+    var key = 'jaeger';
+    var valueFn = function () {
+      return new BPromise(function (resolve, reject) {
+        reject('processing rejection');
+      });
+    };
+
+    var cachedValue;
+    var isPropegatedRejection;
+
+    beforeEach(function (done) {
+      bcache(key, valueFn).then(function () {
+        cachedValue = bcache._lrucache.get(key);
+      }, function () {
+        isPropegatedRejection = true;
+        done();
+      });
+    });
+
+    it('avoids setting on error within promise', function () {
+      chai.expect(isPropegatedRejection).to.equal(true);
+      chai.expect(cachedValue).to.equal(undefined);
     });
   });
 
@@ -171,9 +228,9 @@ describe('bluecache ->', function () {
       var isNonZero = observedMS > -1;
       var isNotTooDelayed = observedMS < 5;
 
-      chai.expect(isNonZero).to.be.true;
-      chai.expect(isNotTooDelayed).to.be.true;
-      chai.expect(observedKey).equals(key);
+      chai.expect(isNonZero).to.equal(true);
+      chai.expect(isNotTooDelayed).to.equal(true);
+      chai.expect(observedKey).to.equal(key);
     });
   });
 
@@ -205,9 +262,9 @@ describe('bluecache ->', function () {
       var isAtLeastValueMS = observedMS > (valueMS - 1);
       var isNotTooDelayed = observedMS < (valueMS + 5);
 
-      chai.expect(isAtLeastValueMS).to.be.true;
-      chai.expect(isNotTooDelayed).to.be.true;
-      chai.expect(observedKey).equals(key);
+      chai.expect(isAtLeastValueMS).to.equal(true);
+      chai.expect(isNotTooDelayed).to.equal(true);
+      chai.expect(observedKey).to.equal(key);
     });
   });
 

@@ -45,6 +45,11 @@ function BlueCache (options) {
           self._lrucache.set(_key, _value);
           exit(_key, false);
           return resolve(_value);
+        }, function (rejected) {
+          reject(rejected);
+        })
+        .catch(function (err) {
+          reject(err);
         });
       });
     });
