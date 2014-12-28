@@ -107,7 +107,7 @@ Returns a promise that resolves to `undefined` after removing all data from the 
 PRs are welcome! For bugs, please include a failing test which passes when your PR is applied.
 
 
-### Release History
+### Release history
 
 | bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) |
 | --- | :--- | :--- |
