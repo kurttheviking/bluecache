@@ -18,7 +18,7 @@
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha"
   },
-  "repository": "git@github.com:agilemd/bluecache.git",
+  "repository": "git@github.com:kurttheviking/bluecache.git",
   "dependencies": {
     "bluebird": "2.3.11",
     "lru-cache": "2.5.0"
