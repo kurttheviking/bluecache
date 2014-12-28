@@ -5,15 +5,12 @@
 bluecache
 =========
 
-In-memory, Promises/A+ [lru-cache](https://github.com/isaacs/node-lru-cache/issues) via [bluebird](https://github.com/petkaantonov/bluebird)
-
-
-### Motivation
-
-Provide a API abstraction (with, ready for this...arity parity) of LRU Cache to make it easier to use within a Promise-based architecture.
+In-memory, read-through, Promises/A+, [lru-cache](https://github.com/isaacs/node-lru-cache/issues) via [bluebird](https://github.com/petkaantonov/bluebird)
 
 
 ### Usage
+
+First, instantiate the cache, passing [options](https://github.com/kurttheviking/bluecache#Options) if necessary.
 
 ```
 var BlueLRU = require("bluecache");
@@ -23,14 +20,17 @@ var options = {
 };
 
 var cache = BlueLRU(options);
+```
 
-cache.set("key", "value")
-  .then(function () {
-    return cache.get("key")
-  })
-  .then(function (_value) {
-    console.log("key => ", _value);  // "key => value"
-  });
+Traditional LRU cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a String for the cache key and a Promise-returning function which resolves to the value to store in the cache. The cached value can be of any type. (To support advanced cases, the key can also be a Promise for a String.)
+
+```
+cache('key', function () {
+  return Promise.resolve('value');
+})
+.then(function (cachedValue) {
+  console.log("cached value => ", _value);  // "key => value"
+})
 ```
 
 
@@ -43,115 +43,63 @@ Options are passed directly to LRU Cache at instantiation; the below documentati
 - `length`: Function called to calculate the length of stored items (e.g. `function(n) { return n.length; }`); defaults to `function(n) { return 1; }`
 - `dispose`: Function called on items when they immediately before they are dropped from the cache. Called with parameters (`key`, `value`)
 - `stale`: Allow the cache to return the stale (expired via `MaxAge`) value before deleting it
-- `reject`: _bluecache only_; Boolean; instructs bluecache to generate rejected promises (rather than resolving to undefined) for missing or expired output from `get`, `peek`, and `has`;  defaults to `false`
+
+
+### Emitted events
+
+The cache instance is also an [event emitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) which provides an `on` method against which the implementing application can listen for certain events.
+
+
+**cache:hit**
+
+```
+{
+  'key': <String>,
+  'ms': <Number:Integer:Milliseconds>
+}
+```
+Note: `ms` is milliseconds elapsed between cache invocation and final resolution of the cached value.
+
+
+**cache:miss**
+
+```
+{
+  'key': <String>,
+  'ms': <Number:Integer:Milliseconds>
+}
+```
+Note: `ms` is milliseconds elapsed between cache invocation and final resolution of the value function.
 
 
 ### API
 
-**set(key, value || Promise(value))**
+**cache(key, promiseFn)**
 
-Update the cache `key` to value `value` directly or pass a promise for a future `value`; updates the "recently-used"-ness of the key; returns a promise that resolves to the set value.
+Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated. If the key does not exist, the `promiseFn` is first resolved to a value which is then set within the LRU cache and returned.
 
-```
-var promisedValue = new Promise(function (resolve, reject) {
-	setTimeout(function () {
-		resolve('value');
-	}, 500); 
-});
-
-cache.set('key', promisedValue).then(function (_setValue) {
-	console.log(_setValue);  // => "value"
-});
-```
+If either `key` or `promiseFn` are missing, the cache instance returns a rejected promise.
 
 
-**get(key)**
+**cache.del(key)**
 
-Returns a promise that resolves to the cached value of `key`; updates the "recently-used"-ness of the key.
-
-
-**peek(key)**
-
-Returns a promise that resolves to the cached value of `key` _without_ updating the "recently-used"-ness of the key.
+Returns a promise that resolves to `undefined` after deleting `key` from the cache.
 
 
-**del(key)**
+**cache.on(eventName, eventHandler)**
 
-Returns a promise that resolves to `undefined` after deleting the key from the cache.
-
-
-**reset()**
-
-Returns a promise that resolves to `undefined` after removing the key from the cache.
-
-
-**has(key)**
-
-Returns a promise that resolves to either `true` or `false` without updating the "recently-used"-ness; does not impact the use of `stale` data.
-
-
-**WIP: forEach(function(value,key,cache), [thisp])**
-
-TODO: NOT YET IMPLEMENTED. What is the most useful promise structure for this?
-
-
-**keys()**
-
-Returns a promise that resolves to an array of the keys in the cache.
+`eventName` is a string, currently either `cache:hit` or `cache:miss`. `eventHandler` is a function which responds to the data provided by the target event.
 
 ```
-cache.keys().then(function (keys) {
-	console.log(keys);
+cache.on('cache:hit', function (data) {
+  console.log('The cache took ' + data.ms + ' milliseconds to respond.');
 });
 ```
 
-**values()**
 
-Returns a promise that resolves to an array of the values in the cache.
+**cache.reset()**
 
-```
-cache.values().then(function (values) {
-	console.log(values);
-});
-```
-
-### reject
-
-Promises provide a convenient mechanism for handling unexpected data in the flow: rejected Promises. In bluecache, this is particularly helpful because the rejection contains the key as the error argument:
-
-```
-var BlueLRU = require('bluecache');
-
-var cache = BlueLRU({
-  reject: true,
-  max: 100
-});
-
-var key = 'jaeger';
-var value = 'mark iv';
-
-cache.set(key, value)
-	.then(function () {
-		return cache.get(key);
-	})
-	.then(function (_value) {
-		console.log(_value + ' = ' + value);
-		cache.del(key);
-		return;
-	})
-	.then(function (_value) {
-		return cache.get(key);
-	})
-	.then(function (_value) {
-		console.log('if rejection was disabled, _value would = ' + _value);
-	}, function (_errorKey) {
-		console.log('rejection is on, so the missing key is = ' + _errorKey);
-	});
-
-// => "rejection is on, so the missing key is = jaeger"
-```
-
-Combine these concepts with `Promise.all` as well as `Array.map` and friends and you've got some solid functional programming afoot.
+Returns a promise that resolves to `undefined` after removing all data from the cache.
 
 
 ### Contribute
@@ -164,3 +112,4 @@ PRs are welcome! For bugs, please include a failing test which passes when your 
 | bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) |
 | --- | :--- | :--- |
 | 0.1.x | 1.0.1 | 2.5.0 |
+| 0.2.x | 2

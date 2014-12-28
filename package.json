@@ -1,16 +1,15 @@
 {
   "name": "bluecache",
-  "description": "In-memory, Promises/A+ lru-cache via bluebird",
-  "version": "0.1.5",
-  "author": "AgileMD <hello@agilemd.com>",
+  "description": "In-memory, read-through, Promises/A+, lru-cache",
+  "version": "0.2.0",
+  "author": "kurttheviking <kurttheviking@outlook.com>",
   "contributors": [
-    "agilekurt <kurt@agilemd.com>",
-    "agilemd <doc@agilemd.com>"
+    "kurttheviking <kurttheviking@outlook.com>"
   ],
   "keywords": [
     "cache",
-    "in-memory",
-    "deferred",
+    "read-through cache",
+    "in-memory cache",
     "promise",
     "promises-a",
     "promises-aplus"
@@ -21,7 +20,7 @@
   },
   "repository": "git@github.com:agilemd/bluecache.git",
   "dependencies": {
-    "bluebird": "1.0.1",
+    "bluebird": "2.3.11",
     "lru-cache": "2.5.0"
   },
   "devDependencies": {

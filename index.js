@@ -1,105 +1,77 @@
+/*jslint node: true */
+'use strict';
+
+var EventEmitter = require('events').EventEmitter;
+var BPromise = require('bluebird');
 var LRU = require('lru-cache');
-var Promise = require('bluebird');
 
 
 function BlueCache (options) {
   if (!(this instanceof BlueCache)) {
-    return new BlueCache (options);
+    return new BlueCache(options);
   }
 
-  if (!options) {
-    options = {};
+  var self = this;
+
+  self._bus = new EventEmitter();
+  self._lrucache = LRU(options || {});
+
+  function cache (key, valueFn) {
+    var tsInit = +new Date();
+
+    function exit (key, wasHit) {
+      var eventName = wasHit ? 'cache:hit' : 'cache:miss';
+      var tsExit = +new Date();
+
+      self._bus.emit(eventName, {
+        key: key,
+        ms: tsExit - tsInit
+      });
+    }
+
+    return new BPromise(function (resolve, reject) {
+      if (!key || !valueFn) {
+        return reject('cache instance must be called with a key and a value function');
+      }
+
+      BPromise.resolve(key).then(function (_key) {
+        if (self._lrucache.has(_key)) {
+          var _value = self._lrucache.get(_key);
+          exit(_key, true);
+          return resolve(_value);
+        }
+
+        valueFn().then(function (_value) {
+          self._lrucache.set(_key, _value);
+          exit(_key, false);
+          return resolve(_value);
+        });
+      });
+    });
   }
 
-  this._reject = !!options.reject;  // [KE] cast for turhty-ness
-  this.__cache = LRU(options);
+  cache.del = function (key) {
+    return new BPromise(function (resolve) {
+      BPromise.resolve(key).then(function (_key) {
+        resolve(self._lrucache.del(_key));
+      });
+    });
+  };
+
+  cache.reset = function () {
+    return new BPromise(function (resolve) {
+      resolve(self._lrucache.reset());
+    });
+  };
+
+  cache.on = function () {
+    self._bus.on.apply(self._bus, arguments);
+  };
+
+  cache._lrucache = self._lrucache;
+
+  return cache;
 }
-
-BlueCache.prototype.set = function (key, value) {
-  var _this = this;
-
-  return Promise.resolve(value).then(function (_value) {
-    _this.__cache.set(key, _value);
-    return _value;
-  });
-};
-
-BlueCache.prototype.get = function (key) {
-  var _this = this;
-
-  return new Promise(function (resolve, reject) {
-    var value = _this.__cache.get(key);
-
-    if (value === undefined && _this._reject) {
-      reject(key);
-      return;
-    }
-
-    resolve(value);
-  });
-};
-
-BlueCache.prototype.peek = function (key) {
-  var _this = this;
-
-  return new Promise(function (resolve, reject) {
-    var value = _this.__cache.peek(key);
-
-    if (value === undefined && _this._reject) {
-      reject(key);
-      return;
-    }
-
-    resolve(value);
-  });
-};
-
-BlueCache.prototype.del = function (key) {
-  var _this = this;
-
-  return new Promise(function (resolve, reject) {
-    resolve(_this.__cache.del(key));
-  });
-};
-
-BlueCache.prototype.reset = function () {
-  var _this = this;
-
-  return new Promise(function (resolve, reject) {
-    resolve(_this.__cache.reset());
-  });
-};
-
-BlueCache.prototype.has = function (key) {
-  var _this = this;
-
-  return new Promise(function (resolve, reject) {
-    var value = _this.__cache.has(key);
-
-    if (value === undefined && _this._reject) {
-      reject(key);
-      return;
-    }
-
-    resolve(value);
-  });
-};
-
-BlueCache.prototype.keys = function () {
-  var _this = this;
-
-  return new Promise(function (resolve, reject) {
-    resolve(_this.__cache.keys());
-  });
-};
-
-BlueCache.prototype.values = function () {
-  var _this = this;
-
-  return new Promise(function (resolve, reject) {
-    resolve(_this.__cache.values());
-  });
-};
 
 
 module.exports = BlueCache;
