@@ -5,7 +5,7 @@
 bluecache
 =========
 
-In-memory, read-through, Promises/A+, [lru-cache](https://github.com/isaacs/node-lru-cache) via [bluebird](https://github.com/petkaantonov/bluebird)
+In-memory, Promises/A+, read-through [lru-cache](https://github.com/isaacs/node-lru-cache) via [bluebird](https://github.com/petkaantonov/bluebird)
 
 
 ## Usage
