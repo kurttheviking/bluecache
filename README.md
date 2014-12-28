@@ -36,12 +36,12 @@ cache('key', function () {
 
 ### Options
 
-Options are passed directly to LRU Cache at instantiation; the below documentation is based on the API descriptions of the underlying LRU Cache:
+Options are passed directly to [lru-cache](https://github.com/isaacs/node-lru-cache/issues#options) at instantiation
 
 - `max`: The maximum size of the cache, checked by applying the length function to all values in the cache
 - `maxAge`: Maximum age in ms; lazily enforced; expired keys will return `undefined`
 - `length`: Function called to calculate the length of stored items (e.g. `function(n) { return n.length; }`); defaults to `function(n) { return 1; }`
-- `dispose`: Function called on items when they immediately before they are dropped from the cache. Called with parameters (`key`, `value`)
+- `dispose`: Function called on items immediately before they are dropped from the cache; called with parameters (`key`, `value`)
 - `stale`: Allow the cache to return the stale (expired via `MaxAge`) value before deleting it
 
 
