@@ -20,7 +20,7 @@
   },
   "repository": "git@github.com:kurttheviking/bluecache.git",
   "dependencies": {
-    "bluebird": "2.3.11",
+    "bluebird": "^2.9.24",
     "lru-cache": "2.5.0"
   },
   "devDependencies": {
