@@ -74,6 +74,14 @@ describe('bluecache ->', function () {
     });
   });
 
+  describe('options ->', function () {
+    it('accepts `interval` timespans', function () {
+      var bcache = new BlueLRU({maxAge: {days: 5}});
+      chai.expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
+    })
+
+  })
+
   describe('deletes ->', function () {
     var bcache = new BlueLRU();
 
