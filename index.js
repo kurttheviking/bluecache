@@ -4,7 +4,7 @@
 var EventEmitter = require('events').EventEmitter;
 var BPromise = require('bluebird');
 var LRU = require('lru-cache');
-
+var interval = require('interval');
 
 function BlueCache (options) {
   if (!(this instanceof BlueCache)) {
@@ -13,15 +13,20 @@ function BlueCache (options) {
 
   var self = this;
 
+  options = options || {};
+  if (typeof options.maxAge === 'object') {
+    options.maxAge = interval(options.maxAge);
+  }
+
   self._bus = new EventEmitter();
-  self._lrucache = LRU(options || {});
+  self._lrucache = LRU(options);
 
   function cache (key, valueFn) {
-    var tsInit = +new Date();
+    var tsInit = Date.now();
 
     function exit (key, wasHit) {
       var eventName = wasHit ? 'cache:hit' : 'cache:miss';
-      var tsExit = +new Date();
+      var tsExit = Date.now();
 
       self._bus.emit(eventName, {
         key: key,
@@ -31,7 +36,7 @@ function BlueCache (options) {
 
     return new BPromise(function (resolve, reject) {
       if (!key || !valueFn) {
-        return reject('cache instance must be called with a key and a value function');
+        return reject(new Error('cache instance must be called with a key and a value function'));
       }
 
       BPromise.resolve(key).then(function (_key) {
