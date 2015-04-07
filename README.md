@@ -24,7 +24,7 @@ var options = {
 var cache = BlueLRU(options);
 ```
 
-Traditional cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a String for the cache key and a Promise-returning function which resolves to the value to store in the cache. The cached value can be of any type.
+Traditional cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a String for the cache key and a Promise-returning function that resolves to a value to store in the cache. The cached value can be of any type.
 
 ```
 cache('key', function (_key) {
@@ -36,12 +36,12 @@ cache('key', function (_key) {
 })
 ```
 
-Note: the priming function is invoked with the resolved key. Thus, the key can be used to determine the behavior of the that function without storing the key in higher-level scope.
+Note: the priming function is invoked with the resolved key. Thus, the key can be used to determine the behavior of the priming function without storing the key in higher-level scope.
 
 
 ## Options
 
-Options are passed directly to [lru-cache](https://github.com/isaacs/node-lru-cache#options) at instantiation
+Options are passed to [lru-cache](https://github.com/isaacs/node-lru-cache#options) at instantiation.
 
 - `max`: The maximum size of the cache, checked by applying the length function to all values in the cache
 - `maxAge`: Maximum age in ms (or a valid [interval](https://www.npmjs.com/package/interval)); lazily enforced; expired keys will return `undefined`
@@ -63,6 +63,7 @@ The cache instance is also an [event emitter](http://nodejs.org/api/events.html#
   'ms': <Number:Integer:Milliseconds>
 }
 ```
+
 Note: `ms` is milliseconds elapsed between cache invocation and final resolution of the cached value.
 
 
@@ -74,16 +75,17 @@ Note: `ms` is milliseconds elapsed between cache invocation and final resolution
   'ms': <Number:Integer:Milliseconds>
 }
 ```
-Note: `ms` is milliseconds elapsed between cache invocation and final resolution of the value function.
+
+Note: `ms` is milliseconds elapsed between cache invocation and final resolution of the priming function.
 
 
 ## API
 
-#### cache(key, dataFunction)
+#### cache(key, primingFunction)
 
-Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `dataFunction` is executed and the returned Promise resolved to its underlying value before being set in the cache and returned. (To support advanced cases, the key can also be a Promise for a String.)
+Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `primingFunction` is executed and the returned Promise resolved to its underlying value before being set in the cache and returned. (To support advanced cases, the key can also be a Promise for a String.)
 
-A rejected promise is returned if either `key` or `dataFunction` is missing.
+A rejected promise is returned if either `key` or `primingFunction` is missing.
 
 
 #### cache.del(key)
