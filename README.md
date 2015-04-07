@@ -39,7 +39,7 @@ cache('key', function () {
 Options are passed directly to [lru-cache](https://github.com/isaacs/node-lru-cache#options) at instantiation
 
 - `max`: The maximum size of the cache, checked by applying the length function to all values in the cache
-- `maxAge`: Maximum age in ms; lazily enforced; expired keys will return `undefined`
+- `maxAge`: Maximum age in ms (or a valid [interval](https://www.npmjs.com/package/interval)); lazily enforced; expired keys will return `undefined`
 - `length`: Function called to calculate the length of stored items (e.g. `function (n) { return n.length; }`); defaults to `function (n) { return 1; }`
 - `dispose`: Function called on items immediately before they are dropped from the cache; called with parameters (`key`, `value`)
 - `stale`: Allow the cache to return the stale (expired via `MaxAge`) value before deleting it
