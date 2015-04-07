@@ -111,10 +111,4 @@ PRs are welcome! For bugs, please include a failing test which passes when your 
 
 ## Release history
 
-The `0.1.x` versions focused on API parity with the underlying lru-cache. However, [Bluebird promisification](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisification) makes that use case unnecessary (though perhaps a bit more complicated). The `0.2.x`+ versions refocus bluecache on implementing lru-cache as a more functionally-oriented, read-through, Promises/A+ module.
-
-| bluecache | [bluebird](https://github.com/petkaantonov/bluebird) | [lru-cache](https://github.com/isaacs/node-lru-cache) |
-| --- | :--- | :--- |
-| 0.1.x | 1.0.1 | 2.5.0 |
-| 0.2.x | 2.3.11 | 2.5.0 |
-| 0.3.x | 2.9.24 | 2.5.0 |
+The `0.1.x` versions focused on API parity with the underlying lru-cache. However, [Bluebird promisification](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisification) makes that use case unnecessary (though perhaps a bit more complicated). For version specific release notes, see the [release history on GitHub](https://github.com/kurttheviking/bluecache/releases).
