@@ -10,9 +10,22 @@ var BlueLRU = require('../index');
 var BPromise = require('bluebird');
 
 
-describe('bluecache ->', function () {
+describe('bluecache', function () {
 
-  describe('gets a promised value from a String key ->', function () {
+  describe('accepts `maxAge` options', function () {
+    it('accepts millisecond timespans', function () {
+      var ms = 5 * 24 * 60 * 60 * 1000;
+      var bcache = new BlueLRU({maxAge: ms});
+      chai.expect(bcache._lrucache._maxAge).to.equal(ms);
+    });
+
+    it('accepts `interval` timespans', function () {
+      var bcache = new BlueLRU({maxAge: {days: 5}});
+      chai.expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
+    });
+  });
+
+  describe('gets a promised value from a String key', function () {
     var bcache = new BlueLRU();
     var lcache = LRU();
 
@@ -47,7 +60,7 @@ describe('bluecache ->', function () {
     });
   });
 
-  describe('gets a promised value from a Promise key ->', function () {
+  describe('gets a promised value from a Promise key', function () {
     var bcache = new BlueLRU();
     var lcache = LRU();
 
@@ -74,15 +87,7 @@ describe('bluecache ->', function () {
     });
   });
 
-  describe('options ->', function () {
-    it('accepts `interval` timespans', function () {
-      var bcache = new BlueLRU({maxAge: {days: 5}});
-      chai.expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
-    })
-
-  })
-
-  describe('deletes ->', function () {
+  describe('deletes', function () {
     var bcache = new BlueLRU();
 
     var key = 'jaeger';
@@ -107,7 +112,7 @@ describe('bluecache ->', function () {
     });
   });
 
-  describe('resets ->', function () {
+  describe('resets', function () {
     var bcache = new BlueLRU();
 
     var key1 = 'jaeger #1';
@@ -149,7 +154,7 @@ describe('bluecache ->', function () {
     });
   });
 
-  describe('handles errors ->', function () {
+  describe('handles errors', function () {
     var bcache = new BlueLRU();
 
     var key = 'jaeger';
@@ -178,35 +183,7 @@ describe('bluecache ->', function () {
     });
   });
 
-  describe('handles errors ->', function () {
-    var bcache = new BlueLRU();
-
-    var key = 'jaeger';
-    var valueFn = function () {
-      return new BPromise(function (resolve, reject) {
-        reject('processing rejection');
-      });
-    };
-
-    var cachedValue;
-    var isPropegatedRejection;
-
-    beforeEach(function (done) {
-      bcache(key, valueFn).then(function () {
-        cachedValue = bcache._lrucache.get(key);
-      }, function () {
-        isPropegatedRejection = true;
-        done();
-      });
-    });
-
-    it('avoids setting on error within promise', function () {
-      chai.expect(isPropegatedRejection).to.equal(true);
-      chai.expect(cachedValue).to.equal(undefined);
-    });
-  });
-
-  describe('emits cache:hit events ->', function () {
+  describe('emits cache:hit events', function () {
     var bcache = new BlueLRU();
 
     var key = 'jaeger';
@@ -242,7 +219,7 @@ describe('bluecache ->', function () {
     });
   });
 
-  describe('emits cache:miss events ->', function () {
+  describe('emits cache:miss events', function () {
     var bcache = new BlueLRU();
 
     var key = 'jaeger';

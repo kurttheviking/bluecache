@@ -20,13 +20,13 @@
   },
   "repository": "git@github.com:kurttheviking/bluecache.git",
   "dependencies": {
-    "bluebird": "^2.9.24",
-    "interval": "0.0.9",
+    "bluebird": "2.9.24",
+    "interval": "0.1.0",
     "lru-cache": "2.5.0"
   },
   "devDependencies": {
-    "chai": "1.9.0",
-    "mocha": "1.17.0"
+    "chai": "2.2.0",
+    "mocha": "2.2.1"
   },
   "license": "MIT"
 }
