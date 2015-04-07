@@ -117,3 +117,4 @@ The `0.1.x` versions focused on API parity with the underlying lru-cache. Howeve
 | --- | :--- | :--- |
 | 0.1.x | 1.0.1 | 2.5.0 |
 | 0.2.x | 2.3.11 | 2.5.0 |
+| 0.3.x | 2.9.24 | 2.5.0 |
