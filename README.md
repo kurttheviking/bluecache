@@ -114,4 +114,4 @@ PRs are welcome! For bugs, please include a failing test which passes when your 
 
 ## Release history
 
-The `0.1.x` versions focused on API parity with the underlying lru-cache. However, [Bluebird promisification](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisification) makes that use case unnecessary (though perhaps a bit more complicated). For version specific release notes, see the [release history on GitHub](https://github.com/kurttheviking/bluecache/releases).
+The `0.1.x` versions focused on API parity with the underlying lru-cache. However, [Bluebird promisification](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisification) makes that use case unnecessary (though perhaps a bit more complicated). So, subsequent releases have instead focused on a read-through paradigm delivered via Promises. For version specific release notes, see the [release history on GitHub](https://github.com/kurttheviking/bluecache/releases).
