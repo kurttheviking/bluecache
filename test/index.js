@@ -33,9 +33,9 @@ describe('bluecache', function () {
       observedValue = _value;
       isCached = bcache._lrucache.has(key);
 
+      chai.expect(cachedValue).to.equal(expectedValue);
       chai.expect(observedValue).to.equal(expectedValue);
       chai.expect(isCached).to.equal(true);
-      chai.expect(cachedValue).to.equal(expectedValue);
     });
   });
 
@@ -51,12 +51,19 @@ describe('bluecache', function () {
     };
 
     lcache.set(key, value);
+    var cachedValue;
     var expectedValue = lcache.get(key);
     var observedValue;
+    var isCached;
 
     return bcache(keyPromise, valueFn).then(function (_value) {
+      cachedValue = bcache._lrucache.get(key);
       observedValue = _value;
+      isCached = bcache._lrucache.has(key);
+
+      chai.expect(cachedValue).to.equal(expectedValue);
       chai.expect(observedValue).to.equal(expectedValue);
+      chai.expect(isCached).to.equal(true);
     });
   });
 
@@ -78,20 +85,7 @@ describe('bluecache', function () {
     });
   });
 
-  describe('accepts `maxAge` options', function () {
-    it('accepts millisecond timespans', function () {
-      var ms = 5 * 24 * 60 * 60 * 1000;
-      var bcache = new BlueLRU({maxAge: ms});
-      chai.expect(bcache._lrucache._maxAge).to.equal(ms);
-    });
-
-    it('accepts `interval` timespans', function () {
-      var bcache = new BlueLRU({maxAge: {days: 5}});
-      chai.expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
-    });
-  });
-
-  describe('deletes', function () {
+  it('deletes and resolves to undefined', function () {
     var bcache = new BlueLRU();
 
     var key = 'jaeger';
@@ -102,21 +96,15 @@ describe('bluecache', function () {
 
     var observedValue;
 
-    beforeEach(function (done) {
-      bcache(key, valueFn).then(function () {
-        return bcache.del(key);
-      }).then(function () {
-        observedValue = bcache._lrucache.get(key);
-        done();
-      });
-    });
-
-    it('and returns undefined', function () {
+    return bcache(key, valueFn).then(function () {
+      return bcache.del(key);
+    }).then(function () {
+      observedValue = bcache._lrucache.get(key);
       should.not.exist(observedValue);
     });
   });
 
-  describe('resets', function () {
+  it('resets and resolves to undefined', function () {
     var bcache = new BlueLRU();
 
     var key1 = 'jaeger #1';
@@ -134,27 +122,32 @@ describe('bluecache', function () {
     var observedKeys;
     var observedResponse;
 
-    beforeEach(function (done) {
-      BPromise.all([
-        bcache(key1, valueFn1),
-        bcache(key2, valueFn2)
-      ])
-      .then(function () {
-        return bcache.reset();
-      })
-      .then(function (_value) {
-        observedKeys = bcache._lrucache.keys();
-        observedResponse = _value;
-        done();
-      });
-    });
+    return BPromise.all([
+      bcache(key1, valueFn1),
+      bcache(key2, valueFn2)
+    ])
+    .then(function () {
+      return bcache.reset();
+    })
+    .then(function (_value) {
+      observedKeys = bcache._lrucache.keys();
+      observedResponse = _value;
 
-    it('and returns undefined', function () {
       chai.expect(observedResponse).to.equal(undefined);
+      chai.expect(observedKeys.length).to.equal(0);
+    });
+  });
+
+  describe('accepts options', function () {
+    it('`maxAge` with milliseconds', function () {
+      var ms = 5 * 24 * 60 * 60 * 1000;
+      var bcache = new BlueLRU({maxAge: ms});
+      chai.expect(bcache._lrucache._maxAge).to.equal(ms);
     });
 
-    it('and empties the underlying keyset', function () {
-      chai.expect(observedKeys.length).to.equal(0);
+    it('`maxAge` with interval', function () {
+      var bcache = new BlueLRU({maxAge: {days: 5}});
+      chai.expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
     });
   });
 
@@ -188,19 +181,20 @@ describe('bluecache', function () {
   });
 
   describe('emits cache:hit events', function () {
-    var bcache = new BlueLRU();
-
     var key = 'jaeger';
     var value = 'mark iii';
-    var valueMS = Math.ceil(Math.random() * 10);
-    var valueFn = function () {
-      return BPromise.resolve(value).delay(valueMS);
-    };
 
+    var delayMS;
     var observedKey;
     var observedMS;
 
     beforeEach(function (done) {
+      var bcache = new BlueLRU();
+      var valueFn = function () {
+        delayMS = Math.ceil(Math.random() * 10);
+        return BPromise.resolve(value).delay(delayMS);
+      };
+
       bcache.on('cache:hit', function (data) {
         observedKey = data.key;
         observedMS = data.ms;
@@ -214,29 +208,33 @@ describe('bluecache', function () {
     });
 
     it('with correct properties', function () {
+      chai.expect(observedKey).to.equal(key);
+    });
+
+    it('with minimal delay', function () {
       var isNonZero = observedMS > -1;
       var isNotTooDelayed = observedMS < 5;
 
       chai.expect(isNonZero).to.equal(true);
       chai.expect(isNotTooDelayed).to.equal(true);
-      chai.expect(observedKey).to.equal(key);
     });
   });
 
   describe('emits cache:miss events', function () {
-    var bcache = new BlueLRU();
-
     var key = 'jaeger';
     var value = 'mark iii';
-    var valueMS = Math.ceil(Math.random() * 10);
-    var valueFn = function () {
-      return BPromise.resolve(value).delay(valueMS);
-    };
 
+    var delayMS;
     var observedKey;
     var observedMS;
 
     beforeEach(function (done) {
+      var bcache = new BlueLRU();
+      var valueFn = function () {
+        delayMS = Math.ceil(Math.random() * 10);
+        return BPromise.resolve(value).delay(delayMS);
+      };
+
       bcache.on('cache:miss', function (data) {
         observedKey = data.key;
         observedMS = data.ms;
@@ -248,12 +246,15 @@ describe('bluecache', function () {
     });
 
     it('with correct properties', function () {
-      var isAtLeastValueMS = observedMS > (valueMS - 1);
-      var isNotTooDelayed = observedMS < (valueMS + 5);
-
-      chai.expect(isAtLeastValueMS).to.equal(true);
-      chai.expect(isNotTooDelayed).to.equal(true);
       chai.expect(observedKey).to.equal(key);
+    });
+
+    it('with minimal delay', function () {
+      var isAtLeastDelayMS = observedMS > (delayMS - 1);
+      var isNotTooDelayed = observedMS < (delayMS + 5);
+
+      chai.expect(isAtLeastDelayMS).to.equal(true);
+      chai.expect(isNotTooDelayed).to.equal(true);
     });
   });
 
