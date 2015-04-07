@@ -2,10 +2,8 @@
     <img src="http://promisesaplus.com/assets/logo-small.png" alt="Promises/A+ logo" title="Promises/A+ 1.0 compliant" align="right" />
 </a>
 
-bluecache
-=========
-
-[![Build Status](https://travis-ci.org/kurttheviking/bluecache.svg?branch=master)](https://travis-ci.org/kurttheviking/bluecache)
+bluecache [![Build Status](https://travis-ci.org/kurttheviking/bluecache.svg?branch=master)](https://travis-ci.org/kurttheviking/bluecache)
+===================
 
 In-memory, Promises/A+, read-through [lru-cache](https://github.com/isaacs/node-lru-cache) via [bluebird](https://github.com/petkaantonov/bluebird)
 
