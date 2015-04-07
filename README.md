@@ -26,10 +26,10 @@ Traditional cache "getting" and "setting" takes place within a single call, prom
 
 ```
 cache('key', function (_key) {
-  console.log("the resolved key => " + _key);  // "the resolved key => key"
+  console.log("the invoked key => " + _key);  // "the invoked key => key"
   return Promise.resolve('value');
 })
-.then(function (cachedValue) {
+.then(function (_value) {
   console.log("the resolved value => " + _value);  // "the resolved value => value"
 })
 ```
