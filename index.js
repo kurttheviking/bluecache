@@ -1,10 +1,11 @@
-/*jslint node: true */
+/*jslint node: true*/
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
 var BPromise = require('bluebird');
-var LRU = require('lru-cache');
+var EventEmitter = require('events').EventEmitter;
 var interval = require('interval');
+var LRU = require('lru-cache');
+
 
 function BlueCache (options) {
   if (!(this instanceof BlueCache)) {
@@ -46,7 +47,7 @@ function BlueCache (options) {
           return resolve(_value);
         }
 
-        valueFn().then(function (_value) {
+        valueFn(_key).then(function (_value) {
           self._lrucache.set(_key, _value);
           exit(_key, false);
           return resolve(_value);

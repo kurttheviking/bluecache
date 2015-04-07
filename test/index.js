@@ -12,20 +12,7 @@ var BPromise = require('bluebird');
 
 describe('bluecache', function () {
 
-  describe('accepts `maxAge` options', function () {
-    it('accepts millisecond timespans', function () {
-      var ms = 5 * 24 * 60 * 60 * 1000;
-      var bcache = new BlueLRU({maxAge: ms});
-      chai.expect(bcache._lrucache._maxAge).to.equal(ms);
-    });
-
-    it('accepts `interval` timespans', function () {
-      var bcache = new BlueLRU({maxAge: {days: 5}});
-      chai.expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
-    });
-  });
-
-  describe('gets a promised value from a String key', function () {
+  it('gets a promised value from a String key', function () {
     var bcache = new BlueLRU();
     var lcache = LRU();
 
@@ -41,26 +28,18 @@ describe('bluecache', function () {
     var observedValue;
     var isCached;
 
-    beforeEach(function (done) {
-      bcache(key, valueFn).then(function (_value) {
-        cachedValue = bcache._lrucache.get(key);
-        observedValue = _value;
-        isCached = bcache._lrucache.has(key);
-        done();
-      });
-    });
+    return bcache(key, valueFn).then(function (_value) {
+      cachedValue = bcache._lrucache.get(key);
+      observedValue = _value;
+      isCached = bcache._lrucache.has(key);
 
-    it('like lru-cache', function () {
       chai.expect(observedValue).to.equal(expectedValue);
-    });
-
-    it('saves the value for future calls', function () {
       chai.expect(isCached).to.equal(true);
       chai.expect(cachedValue).to.equal(expectedValue);
     });
   });
 
-  describe('gets a promised value from a Promise key', function () {
+  it('gets a promised value from a Promise key', function () {
     var bcache = new BlueLRU();
     var lcache = LRU();
 
@@ -75,15 +54,40 @@ describe('bluecache', function () {
     var expectedValue = lcache.get(key);
     var observedValue;
 
-    beforeEach(function (done) {
-      bcache(keyPromise, valueFn).then(function (_value) {
-        observedValue = _value;
-        done();
-      });
+    return bcache(keyPromise, valueFn).then(function (_value) {
+      observedValue = _value;
+      chai.expect(observedValue).to.equal(expectedValue);
+    });
+  });
+
+  it('invokes the value function with the key', function () {
+    var bcache = new BlueLRU();
+    var lcache = LRU();
+
+    var key = 'jaeger';
+    var keyPromise = BPromise.resolve(key);
+    var valueFn = function (_key) {
+      return BPromise.resolve(_key);
+    };
+
+    return bcache(keyPromise, valueFn).then(function (_value) {
+      var expectedValue = key;
+      var observedValue = _value;
+
+      chai.expect(observedValue).to.equal(expectedValue);
+    });
+  });
+
+  describe('accepts `maxAge` options', function () {
+    it('accepts millisecond timespans', function () {
+      var ms = 5 * 24 * 60 * 60 * 1000;
+      var bcache = new BlueLRU({maxAge: ms});
+      chai.expect(bcache._lrucache._maxAge).to.equal(ms);
     });
 
-    it('like lru-cache', function () {
-      chai.expect(observedValue).to.equal(expectedValue);
+    it('accepts `interval` timespans', function () {
+      var bcache = new BlueLRU({maxAge: {days: 5}});
+      chai.expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
     });
   });
 
