@@ -36,7 +36,7 @@ cache('key', function (_key) {
 })
 ```
 
-Note: the cache value function is invoked with the resolved key. Thus, the key can be used to determine the behavior of the cache-priming function without storing the key in higher-level scope.
+Note: the priming function is invoked with the resolved key. Thus, the key can be used to determine the behavior of the that function without storing the key in higher-level scope.
 
 
 ## Options
