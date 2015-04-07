@@ -27,13 +27,16 @@ var cache = BlueLRU(options);
 Traditional cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a String for the cache key and a Promise-returning function which resolves to the value to store in the cache. The cached value can be of any type.
 
 ```
-cache('key', function () {
+cache('key', function (_key) {
+  console.log("the resolved key => ", _key);
   return Promise.resolve('value');
 })
 .then(function (cachedValue) {
   console.log("cached value => ", _value);  // "key => value"
 })
 ```
+
+Note: the cache value function is invoked with the resolved key. Thus, the key can be used to determine the behavior of the cache-priming function without storing the key in higher-level scope.
 
 
 ## Options
