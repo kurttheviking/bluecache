@@ -46,21 +46,25 @@ describe('bluecache', function () {
     var key = 'jaeger';
     var keyPromise = BPromise.resolve(key);
     var value = 'mark iv';
-    var valueFn = function () {
-      return BPromise.resolve(value);
-    };
 
     lcache.set(key, value);
     var cachedValue;
     var expectedValue = lcache.get(key);
+    var observedKey;
     var observedValue;
     var isCached;
+
+    var valueFn = function (_key) {
+      observedKey = _key;
+      return BPromise.resolve(value);
+    };
 
     return bcache(keyPromise, valueFn).then(function (_value) {
       cachedValue = bcache._lrucache.get(key);
       observedValue = _value;
       isCached = bcache._lrucache.has(key);
 
+      chai.expect(observedKey).to.equal(key);
       chai.expect(cachedValue).to.equal(expectedValue);
       chai.expect(observedValue).to.equal(expectedValue);
       chai.expect(isCached).to.equal(true);
