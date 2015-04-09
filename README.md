@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/kurttheviking/bluecache.svg?branch=master)](https://travis-ci.org/kurttheviking/bluecache)
-
 bluecache
 =========
+
+[![Build Status](https://travis-ci.org/kurttheviking/bluecache.svg?branch=master)](https://travis-ci.org/kurttheviking/bluecache)
 
 In-memory, [Promises/A+](https://promisesaplus.com/), read-through [lru-cache](https://github.com/isaacs/node-lru-cache) via [bluebird](https://github.com/petkaantonov/bluebird)
 
