@@ -6,11 +6,11 @@ bluecache
 In-memory, [Promises/A+](https://promisesaplus.com/), read-through [lru-cache](https://github.com/isaacs/node-lru-cache) via [bluebird](https://github.com/petkaantonov/bluebird)
 
 
-## Usage
+## Use
 
 First, instantiate the cache &ndash; passing [options](https://github.com/kurttheviking/bluecache#options) if necessary.
 
-```
+```js
 var BlueLRU = require("bluecache");
 var options = {
   max: 500,
@@ -22,7 +22,7 @@ var cache = BlueLRU(options);
 
 Traditional cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a String for the cache key and a Promise-returning function that resolves to a value to store in the cache. The cached value can be of any type.
 
-```
+```js
 cache('key', function (_key) {
   console.log("the invoked key => " + _key);  // "the invoked key => key"
   return Promise.resolve('value');
@@ -48,7 +48,7 @@ Options are passed to [lru-cache](https://github.com/isaacs/node-lru-cache#optio
 
 ## API
 
-#### cache(key, primingFunction)
+### cache(key, primingFunction)
 
 Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `primingFunction` is executed and the returned Promise resolved to its underlying value before being set in the cache and returned. (To support advanced cases, the key can also be a Promise for a String.)
 
@@ -62,7 +62,7 @@ Returns a promise that resolves to `undefined` after deleting `key` from the cac
 
 `eventName` is a string, corresponding to a [supported event](https://github.com/kurttheviking/bluecache#emitted-events). `eventHandler` is a function which responds to the data provided by the target event.
 
-```
+```js
 cache.on('cache:hit', function (data) {
   console.log('The cache took ' + data.ms + ' milliseconds to respond.');
 });
@@ -77,10 +77,9 @@ Returns a promise that resolves to `undefined` after removing all data from the 
 
 The cache instance is also an [event emitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) which provides an `on` method against which the implementing application can listen for the below events.
 
-
 #### cache:hit
 
-```
+```js
 {
   'key': <String>,
   'ms': <Number:Integer:Milliseconds>
@@ -89,10 +88,9 @@ The cache instance is also an [event emitter](http://nodejs.org/api/events.html#
 
 Note: `ms` is milliseconds elapsed between cache invocation and final resolution of the cached value.
 
-
 #### cache:miss
 
-```
+```js
 {
   'key': <String>,
   'ms': <Number:Integer:Milliseconds>
@@ -107,6 +105,16 @@ Note: `ms` is milliseconds elapsed between cache invocation and final resolution
 PRs are welcome! For bugs, please include a failing test which passes when your PR is applied.
 
 
-## Release history
+## Tests
 
-The `0.1.x` versions focused on API parity with the underlying lru-cache. However, [Bluebird promisification](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisification) makes that use case unnecessary (though perhaps a bit more complicated). So, subsequent releases have instead focused on a read-through paradigm delivered via Promises. For version specific release notes, see the [release history on GitHub](https://github.com/kurttheviking/bluecache/releases).
+To run the unit test suite:
+
+```sh
+npm test
+```
+
+Or, to determine unit test coverage:
+
+```sh
+npm run coverage
+```
