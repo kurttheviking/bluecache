@@ -1,16 +1,22 @@
-/* jslint node: true */
 /* global beforeEach, describe, it */
 'use strict';
 
 var chai = require('chai');
-var should = chai.should();
 
 var LRU = require('lru-cache');
 var BlueLRU = require('../index');
 var BPromise = require('bluebird');
 
+var expect = chai.expect;
 
 describe('bluecache', function () {
+
+  it('does not require the new keyword', function () {
+    var bcache = require('../index')();
+
+    expect(bcache).to.be.a('function');
+    expect(global.bcache).to.equal(undefined);
+  });
 
   it('gets a promised value from a String key', function () {
     var bcache = new BlueLRU();
@@ -33,9 +39,9 @@ describe('bluecache', function () {
       observedValue = _value;
       isCached = bcache._lrucache.has(key);
 
-      chai.expect(cachedValue).to.equal(expectedValue);
-      chai.expect(observedValue).to.equal(expectedValue);
-      chai.expect(isCached).to.equal(true);
+      expect(cachedValue).to.equal(expectedValue);
+      expect(observedValue).to.equal(expectedValue);
+      expect(isCached).to.equal(true);
     });
   });
 
@@ -64,16 +70,15 @@ describe('bluecache', function () {
       observedValue = _value;
       isCached = bcache._lrucache.has(key);
 
-      chai.expect(observedKey).to.equal(key);
-      chai.expect(cachedValue).to.equal(expectedValue);
-      chai.expect(observedValue).to.equal(expectedValue);
-      chai.expect(isCached).to.equal(true);
+      expect(observedKey).to.equal(key);
+      expect(cachedValue).to.equal(expectedValue);
+      expect(observedValue).to.equal(expectedValue);
+      expect(isCached).to.equal(true);
     });
   });
 
   it('invokes the value function with the key', function () {
     var bcache = new BlueLRU();
-    var lcache = LRU();
 
     var key = 'jaeger';
     var keyPromise = BPromise.resolve(key);
@@ -85,7 +90,7 @@ describe('bluecache', function () {
       var expectedValue = key;
       var observedValue = _value;
 
-      chai.expect(observedValue).to.equal(expectedValue);
+      expect(observedValue).to.equal(expectedValue);
     });
   });
 
@@ -104,7 +109,7 @@ describe('bluecache', function () {
       return bcache.del(key);
     }).then(function () {
       observedValue = bcache._lrucache.get(key);
-      should.not.exist(observedValue);
+      expect(observedValue).to.equal(undefined);
     });
   });
 
@@ -137,8 +142,8 @@ describe('bluecache', function () {
       observedKeys = bcache._lrucache.keys();
       observedResponse = _value;
 
-      chai.expect(observedResponse).to.equal(undefined);
-      chai.expect(observedKeys.length).to.equal(0);
+      expect(observedResponse).to.equal(undefined);
+      expect(observedKeys.length).to.equal(0);
     });
   });
 
@@ -146,41 +151,55 @@ describe('bluecache', function () {
     it('`maxAge` with milliseconds', function () {
       var ms = 5 * 24 * 60 * 60 * 1000;
       var bcache = new BlueLRU({maxAge: ms});
-      chai.expect(bcache._lrucache._maxAge).to.equal(ms);
+      expect(bcache._lrucache._maxAge).to.equal(ms);
     });
 
     it('`maxAge` with interval', function () {
       var bcache = new BlueLRU({maxAge: {days: 5}});
-      chai.expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
+      expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
     });
   });
 
   describe('handles errors', function () {
     var bcache = new BlueLRU();
 
-    var key = 'jaeger';
-    var valueFn = function () {
-      return new BPromise(function () {
-        throw new Error('processing error');
+    it('rejects with error if invoked without key', function () {
+      return bcache().catch(function (err) {
+        expect(err).to.match(/missing required parameter: key/);
       });
-    };
+    });
 
-    var cachedValue;
-    var isPropegatedError;
+    it('rejects with error if invoked without value function', function () {
+      var key = 'jaeger';
 
-    beforeEach(function (done) {
-      bcache(key, valueFn).then(function () {
-        cachedValue = bcache._lrucache.get(key);
-      })
-      .catch(function () {
-        isPropegatedError = true;
-        done();
+      return bcache(key).catch(function (err) {
+        expect(err).to.match(/missing required parameter: valueFunction/);
+      });
+    });
+
+    it('rejects with error if value function is not a function', function () {
+      var key = 'jaeger';
+      var value = 'mark iii';
+
+      return bcache(key, value).catch(function (err) {
+        expect(err).to.match(
+          /invalid parameter: valueFunction must be a function/
+        );
       });
     });
 
     it('avoids setting on error within promise', function () {
-      chai.expect(isPropegatedError).to.equal(true);
-      chai.expect(cachedValue).to.equal(undefined);
+      var key = 'jaeger';
+      var valueFn = function () {
+        return new BPromise(function () {
+          throw new Error('processing error');
+        });
+      };
+
+      return bcache(key, valueFn).catch(function (err) {
+        expect(err).to.match(/processing error/);
+        expect(bcache._lrucache.get(key)).to.equal(undefined);
+      });
     });
   });
 
@@ -212,15 +231,15 @@ describe('bluecache', function () {
     });
 
     it('with correct properties', function () {
-      chai.expect(observedKey).to.equal(key);
+      expect(observedKey).to.equal(key);
     });
 
     it('with minimal delay', function () {
       var isNonZero = observedMS > -1;
       var isNotTooDelayed = observedMS < 5;
 
-      chai.expect(isNonZero).to.equal(true);
-      chai.expect(isNotTooDelayed).to.equal(true);
+      expect(isNonZero).to.equal(true);
+      expect(isNotTooDelayed).to.equal(true);
     });
   });
 
@@ -250,15 +269,15 @@ describe('bluecache', function () {
     });
 
     it('with correct properties', function () {
-      chai.expect(observedKey).to.equal(key);
+      expect(observedKey).to.equal(key);
     });
 
     it('with minimal delay', function () {
       var isAtLeastDelayMS = observedMS > (delayMS - 1);
       var isNotTooDelayed = observedMS < (delayMS + 5);
 
-      chai.expect(isAtLeastDelayMS).to.equal(true);
-      chai.expect(isNotTooDelayed).to.equal(true);
+      expect(isAtLeastDelayMS).to.equal(true);
+      expect(isNotTooDelayed).to.equal(true);
     });
   });
 

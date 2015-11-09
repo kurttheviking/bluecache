@@ -1,11 +1,9 @@
 {
   "name": "bluecache",
-  "description": "In-memory, Promises/A+, read-through lru-cache",
   "version": "0.4.2",
-  "author": "kurttheviking <kurttheviking@outlook.com>",
-  "contributors": [
-    "kurttheviking <kurttheviking@outlook.com>"
-  ],
+  "description": "In-memory, Promises/A+, read-through lru-cache",
+  "license": "MIT",
+  "main": "index.js",
   "keywords": [
     "lru cache",
     "read-through cache",
@@ -14,19 +12,38 @@
     "promises-a",
     "promises-aplus"
   ],
-  "main": "index.js",
-  "scripts": {
-    "test": "node node_modules/mocha/bin/mocha"
+  "author": {
+    "name": "Kurt Ericson",
+    "email": "kurttheviking@outlook.com",
+    "url": "http://github.com/kurttheviking"
   },
-  "repository": "git@github.com:kurttheviking/bluecache.git",
+  "contributors": [
+    {
+      "name": "Kurt Ericson",
+      "email": "kurttheviking@outlook.com",
+      "url": "https://github.com/kurttheviking"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kurttheviking/bluecache.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kurttheviking/bluecache/issues"
+  },
+  "homepage": "https://github.com/kurttheviking/bluecache#readme",
   "dependencies": {
-    "bluebird": "2.9.24",
+    "bluebird": "3.0.5",
     "interval": "0.1.0",
-    "lru-cache": "2.5.0"
+    "lru-cache": "2.7.0"
   },
   "devDependencies": {
-    "chai": "2.2.0",
-    "mocha": "2.2.1"
+    "chai": "3.4.0",
+    "istanbul": "0.4.0",
+    "mocha": "2.3.3"
   },
-  "license": "MIT"
+  "scripts": {
+    "coverage": "./node_modules/istanbul/lib/cli.js cover --report=json-summary --report=html _mocha ./test -- --recursive",
+    "test": "node node_modules/mocha/bin/mocha ./test --recursive"
+  }
 }
