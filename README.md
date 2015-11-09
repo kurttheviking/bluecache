@@ -48,7 +48,7 @@ Options are passed to [lru-cache](https://github.com/isaacs/node-lru-cache#optio
 
 ## API
 
-### cache(key, primingFunction)
+#### cache(key, primingFunction)
 
 Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `primingFunction` is executed and the returned Promise resolved to its underlying value before being set in the cache and returned. (To support advanced cases, the key can also be a Promise for a String.)
 
