@@ -151,12 +151,12 @@ describe('bluecache', function () {
     it('`maxAge` with milliseconds', function () {
       var ms = 5 * 24 * 60 * 60 * 1000;
       var bcache = new BlueLRU({maxAge: ms});
-      expect(bcache._lrucache._maxAge).to.equal(ms);
+      expect(bcache._lrucache.maxAge).to.equal(ms);
     });
 
     it('`maxAge` with interval', function () {
       var bcache = new BlueLRU({maxAge: {days: 5}});
-      expect(bcache._lrucache._maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
+      expect(bcache._lrucache.maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
     });
   });
 
