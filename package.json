@@ -33,14 +33,14 @@
   },
   "homepage": "https://github.com/kurttheviking/bluecache#readme",
   "dependencies": {
-    "bluebird": "3.0.5",
-    "interval": "0.1.0",
-    "lru-cache": "2.7.0"
+    "bluebird": "3.1.1",
+    "interval": "0.1.1",
+    "lru-cache": "4.0.0"
   },
   "devDependencies": {
-    "chai": "3.4.0",
-    "istanbul": "0.4.0",
-    "mocha": "2.3.3"
+    "chai": "3.4.1",
+    "istanbul": "0.4.1",
+    "mocha": "2.3.4"
   },
   "scripts": {
     "coverage": "./node_modules/istanbul/lib/cli.js cover --report=json-summary --report=html _mocha ./test -- --recursive",
