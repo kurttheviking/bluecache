@@ -2,10 +2,11 @@
 'use strict';
 
 var chai = require('chai');
+var sinon = require('sinon');
 
+var BPromise = require('bluebird');
 var LRU = require('lru-cache');
 var BlueLRU = require('../index');
-var BPromise = require('bluebird');
 
 var expect = chai.expect;
 
@@ -17,15 +18,61 @@ describe('bluecache', function () {
     expect(global.bcache).to.equal(undefined);
   });
 
-  it('gets a promised value from a String key', function () {
+  it('gets a plain value from a String key', function () {
     var bcache = new BlueLRU();
     var lcache = LRU();
 
     var key = 'jaeger';
     var value = 'mark iv';
-    var valueFn = function () {
-      return BPromise.resolve(value);
-    };
+
+    lcache.set(key, value);
+    var expectedValue = lcache.get(key);
+    var observedValue;
+    var isCached;
+
+    return bcache(key, value).then(function (_value) {
+      return bcache._lrucache.get(key).value.then(function (cachedValue) {
+        observedValue = _value;
+        isCached = bcache._lrucache.has(key);
+
+        expect(cachedValue).to.equal(expectedValue);
+        expect(observedValue).to.equal(expectedValue);
+        expect(isCached).to.equal(true);
+      });
+    });
+  });
+
+  it('gets a Promise value from a String key', function () {
+    var bcache = new BlueLRU();
+    var lcache = LRU();
+
+    var key = 'jaeger';
+    var value = 'mark iv';
+
+    lcache.set(key, value);
+    var expectedValue = lcache.get(key);
+    var observedValue;
+    var isCached;
+
+    return bcache(key, BPromise.resolve(value)).then(function (_value) {
+      return bcache._lrucache.get(key).value.then(function (cachedValue) {
+        observedValue = _value;
+        isCached = bcache._lrucache.has(key);
+
+        expect(cachedValue).to.equal(expectedValue);
+        expect(observedValue).to.equal(expectedValue);
+        expect(isCached).to.equal(true);
+      });
+    });
+  });
+
+  it('gets a function value from a String key', function () {
+    var bcache = new BlueLRU();
+    var lcache = LRU();
+
+    var key = 'jaeger';
+    var value = 'mark iv';
+    function valueFn () { return BPromise.resolve(value); }
 
     lcache.set(key, value);
     var expectedValue = lcache.get(key);
@@ -33,6 +80,30 @@ describe('bluecache', function () {
     var isCached;
 
     return bcache(key, valueFn).then(function (_value) {
+      return bcache._lrucache.get(key).value.then(function (cachedValue) {
+        observedValue = _value;
+        isCached = bcache._lrucache.has(key);
+
+        expect(cachedValue).to.equal(expectedValue);
+        expect(observedValue).to.equal(expectedValue);
+        expect(isCached).to.equal(true);
+      });
+    });
+  });
+
+  it('gets a function Promise value from a String key', function () {
+    var bcache = new BlueLRU();
+    var lcache = LRU();
+
+    var key = 'jaeger';
+    var value = 'mark iv';
+
+    lcache.set(key, value);
+    var expectedValue = lcache.get(key);
+    var observedValue;
+    var isCached;
+
+    return bcache(key, value).then(function (_value) {
       return bcache._lrucache.get(key).value.then(function (cachedValue) {
         observedValue = _value;
         isCached = bcache._lrucache.has(key);
@@ -76,7 +147,7 @@ describe('bluecache', function () {
     });
   });
 
-  it('invokes the value function with the key', function () {
+  it('invokes a value function with the key', function () {
     var bcache = new BlueLRU();
 
     var key = 'jaeger';
@@ -93,22 +164,87 @@ describe('bluecache', function () {
     });
   });
 
+  it('allows null cache values', function () {
+    var bcache = new BlueLRU();
+
+    var key = 'jaeger';
+    var value = null;
+
+    var expectedValue = value;
+    var observedValue;
+    var isCached;
+
+    return bcache(key, value).then(function (_value) {
+      return bcache._lrucache.get(key).value.then(function (cachedValue) {
+        observedValue = _value;
+        isCached = bcache._lrucache.has(key);
+
+        expect(cachedValue).to.equal(expectedValue);
+        expect(observedValue).to.equal(expectedValue);
+        expect(isCached).to.equal(true);
+      });
+    });
+  });
+
+  it('allows undefined cache values', function () {
+    var bcache = new BlueLRU();
+
+    var key = 'jaeger';
+
+    var expectedValue;
+    var observedValue;
+    var isCached;
+
+    return bcache(key).then(function (_value) {
+      return bcache._lrucache.get(key).value.then(function (cachedValue) {
+        observedValue = _value;
+        isCached = bcache._lrucache.has(key);
+
+        expect(cachedValue).to.equal(expectedValue);
+        expect(observedValue).to.equal(expectedValue);
+        expect(isCached).to.equal(true);
+      });
+    });
+  });
+
   it('deletes and resolves to undefined', function () {
     var bcache = new BlueLRU();
 
     var key = 'jaeger';
     var value = 'mark iv';
-    var valueFn = function () {
-      return BPromise.resolve(value);
-    };
 
     var observedValue;
 
-    return bcache(key, valueFn).then(function () {
+    return bcache(key, value).then(function () {
       return bcache.del(key);
-    }).then(function () {
+    })
+    .then(function () {
       observedValue = bcache._lrucache.get(key);
       expect(observedValue).to.equal(undefined);
+    });
+  });
+
+  it('invokes a value function once (avoids thundering herd)', function () {
+    var bcache = new BlueLRU();
+
+    var key = 'jaeger';
+    var value = 'mark iv';
+    var valueFn = sinon.stub().returns(value);
+
+    var expectedValue = value;
+
+    return BPromise.all([
+      bcache(key, valueFn),
+      BPromise.delay(5, bcache(key, valueFn)),
+      BPromise.delay(15, bcache(key, valueFn)),
+      BPromise.delay(25, bcache(key, valueFn))
+    ])
+    .then(function (results) {
+      results.map(function (observedValue) {
+        expect(observedValue).to.equal(expectedValue);
+      });
+
+      expect(valueFn.callCount).to.equal(1);
     });
   });
 
@@ -123,6 +259,41 @@ describe('bluecache', function () {
       var bcache = new BlueLRU({maxAge: {days: 5}});
       expect(bcache._lrucache.maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
     });
+
+    it('`length` function as constant', function () {
+      var expectedLength = parseInt(Math.random() * 100, 10);
+      function lengthFn () {
+        return expectedLength;
+      }
+
+      var bcache = new BlueLRU({length: lengthFn});
+
+      var key = 'jaeger';
+      var value = 'mark iv';
+
+      return bcache(key, value).then(function () {
+        var storedValue = bcache._lrucache.get(key);
+
+        expect(storedValue.length).to.equal(expectedLength);
+      });
+    });
+
+    it('`length` function as computed property', function () {
+      function lengthFn (n) {
+        return n.length;
+      }
+
+      var bcache = new BlueLRU({length: lengthFn});
+
+      var key = 'jaeger';
+      var value = 'mark iv';
+
+      return bcache(key, value).then(function () {
+        var storedValue = bcache._lrucache.get(key);
+
+        expect(storedValue.length).to.equal(value.length);
+      });
+    });
   });
 
   describe('handles errors', function () {
@@ -134,26 +305,7 @@ describe('bluecache', function () {
       });
     });
 
-    it('rejects with error if invoked without value function', function () {
-      var key = 'jaeger';
-
-      return bcache(key).catch(function (err) {
-        expect(err).to.match(/missing required parameter: valueFunction/);
-      });
-    });
-
-    it('rejects with error if value function is not a function', function () {
-      var key = 'jaeger';
-      var value = 'mark iii';
-
-      return bcache(key, value).catch(function (err) {
-        expect(err).to.match(
-          /invalid parameter: valueFunction must be a function/
-        );
-      });
-    });
-
-    it('avoids setting on error within promise', function () {
+    it('stores the rejected promise on error', function () {
       var key = 'jaeger';
       var valueFn = function () {
         return new BPromise(function () {
@@ -163,7 +315,10 @@ describe('bluecache', function () {
 
       return bcache(key, valueFn).catch(function (err) {
         expect(err).to.match(/processing error/);
-        expect(bcache._lrucache.get(key)).to.equal(undefined);
+
+        return bcache._lrucache.get(key).value.catch(function (err) {
+          expect(err).to.match(/processing error/);
+        });
       });
     });
   });

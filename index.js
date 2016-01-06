@@ -65,14 +65,15 @@ function BlueCache (opts) {
         length: 1
       };
 
-      memo.value.then(function (result) {
-        memo.length = getMemoLength(result);
-        lrucache.set(memoKey, memo);
-        emit(memoKey, false);
-      });
-
       lrucache.set(memoKey, memo);
-      return memo.value;
+
+      return memo.value.then(function (result) {
+        memo.length = getMemoLength(result);
+        emit(memoKey, false);
+
+        lrucache.set(memoKey, memo);
+        return result;
+      });
     });
   }
 
