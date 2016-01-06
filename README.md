@@ -68,10 +68,6 @@ cache.on('cache:hit', function (data) {
 });
 ```
 
-#### cache.reset()
-
-Returns a promise that resolves to `undefined` after removing all data from the cache.
-
 
 ## Emitted events
 

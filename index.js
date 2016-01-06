@@ -84,12 +84,6 @@ function BlueCache (opts) {
     });
   };
 
-  cache.reset = function () {
-    return new BPromise(function (resolve) {
-      resolve(lrucache.reset());
-    });
-  };
-
   cache.on = function () {
     bus.on.apply(bus, arguments);
   };
