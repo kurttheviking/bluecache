@@ -5,70 +5,81 @@ var EventEmitter = require('events').EventEmitter;
 var interval = require('interval');
 var LRU = require('lru-cache');
 
-function BlueCache (options) {
+function BlueCache (opts) {
   if (!(this instanceof BlueCache)) {
-    return new BlueCache(options);
+    return new BlueCache(opts);
   }
 
-  options = options || {};
+  var options = opts || {};
   if (typeof options.maxAge === 'object') {
     options.maxAge = interval(options.maxAge);
   }
 
+  var getMemoLength = (typeof options.length === 'function') ?
+    options.length :
+    function () { return 1; };
+
+  // [KE] ensure that the memo's length property is always used;
+  //      any user-specified length is set to memo.length
+  options.length = function (memo) {
+    return memo.length;
+  };
+
   var bus = new EventEmitter();
   var lrucache = LRU(options);
 
-  function cache (key, valueFn) {
+  function cache (key, value) {
     var tsInit = Date.now();
 
-    function emit (key, wasHit) {
+    function emit (memoKey, wasHit) {
       var eventName = wasHit ? 'cache:hit' : 'cache:miss';
       var tsExit = Date.now();
 
       bus.emit(eventName, {
-        key: key,
+        key: memoKey,
         ms: tsExit - tsInit
       });
     }
 
-    return new BPromise(function (resolve, reject) {
+    return BPromise.try(function () {
       if (key === undefined) {
-        return reject(
-          new Error('missing required parameter: key')
-        );
-      }
-      else if (valueFn === undefined) {
-        return reject(
-          new Error('missing required parameter: valueFunction')
-        );
-      }
-      else if (typeof valueFn !== 'function') {
-        return reject(
-          new Error('invalid parameter: valueFunction must be a function')
-        );
+        throw new Error('missing required parameter: key');
       }
 
-      return BPromise.resolve(key).then(function (_key) {
-        if (lrucache.has(_key)) {
-          var _value = lrucache.get(_key);
-          emit(_key, true);
-          return resolve(_value);
-        }
+      return key;
+    })
+    .then(function (memoKey) {
+      var memo;
+      var isValueFunction = (typeof value === 'function');
 
-        return valueFn(_key).then(function (_value) {
-          lrucache.set(_key, _value);
-          emit(_key, false);
-          return resolve(_value);
-        })
-        .catch(reject);
+      if (lrucache.has(memoKey)) {
+        memo = lrucache.get(memoKey);
+        emit(memoKey, true);
+        return memo.value;
+      }
+
+      memo = {
+        value: BPromise.try(function () {
+          return isValueFunction ? value(memoKey) : value;
+        }),
+        length: 1
+      };
+
+      memo.value.then(function (result) {
+        memo.length = getMemoLength(result);
+        lrucache.set(memoKey, memo);
+        emit(memoKey, false);
       });
+
+      lrucache.set(memoKey, memo);
+      return memo.value;
     });
   }
 
   cache.del = function (key) {
     return new BPromise(function (resolve) {
-      BPromise.resolve(key).then(function (_key) {
-        resolve(lrucache.del(_key));
+      BPromise.resolve(key).then(function (memoKey) {
+        resolve(lrucache.del(memoKey));
       });
     });
   };
@@ -87,6 +98,5 @@ function BlueCache (options) {
 
   return cache;
 }
-
 
 module.exports = BlueCache;

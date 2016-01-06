@@ -10,7 +10,6 @@ var BPromise = require('bluebird');
 var expect = chai.expect;
 
 describe('bluecache', function () {
-
   it('does not require the new keyword', function () {
     var bcache = require('../index')();
 
@@ -29,19 +28,19 @@ describe('bluecache', function () {
     };
 
     lcache.set(key, value);
-    var cachedValue;
     var expectedValue = lcache.get(key);
     var observedValue;
     var isCached;
 
     return bcache(key, valueFn).then(function (_value) {
-      cachedValue = bcache._lrucache.get(key);
-      observedValue = _value;
-      isCached = bcache._lrucache.has(key);
+      return bcache._lrucache.get(key).value.then(function (cachedValue) {
+        observedValue = _value;
+        isCached = bcache._lrucache.has(key);
 
-      expect(cachedValue).to.equal(expectedValue);
-      expect(observedValue).to.equal(expectedValue);
-      expect(isCached).to.equal(true);
+        expect(cachedValue).to.equal(expectedValue);
+        expect(observedValue).to.equal(expectedValue);
+        expect(isCached).to.equal(true);
+      });
     });
   });
 
@@ -54,7 +53,6 @@ describe('bluecache', function () {
     var value = 'mark iv';
 
     lcache.set(key, value);
-    var cachedValue;
     var expectedValue = lcache.get(key);
     var observedKey;
     var observedValue;
@@ -66,14 +64,15 @@ describe('bluecache', function () {
     };
 
     return bcache(keyPromise, valueFn).then(function (_value) {
-      cachedValue = bcache._lrucache.get(key);
-      observedValue = _value;
-      isCached = bcache._lrucache.has(key);
+      return bcache._lrucache.get(key).value.then(function (cachedValue) {
+        observedValue = _value;
+        isCached = bcache._lrucache.has(key);
 
-      expect(observedKey).to.equal(key);
-      expect(cachedValue).to.equal(expectedValue);
-      expect(observedValue).to.equal(expectedValue);
-      expect(isCached).to.equal(true);
+        expect(observedKey).to.equal(key);
+        expect(cachedValue).to.equal(expectedValue);
+        expect(observedValue).to.equal(expectedValue);
+        expect(isCached).to.equal(true);
+      });
     });
   });
 
@@ -280,5 +279,4 @@ describe('bluecache', function () {
       expect(isNotTooDelayed).to.equal(true);
     });
   });
-
 });
