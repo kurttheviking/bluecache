@@ -46,7 +46,9 @@ function BlueCache (opts) {
         throw new Error('missing required parameter: key');
       }
 
-      return key;
+      var isKeyFunction = (typeof key === 'function');
+
+      return isKeyFunction ? key() : key;
     })
     .then(function (memoKey) {
       var memo;

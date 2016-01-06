@@ -115,6 +115,27 @@ describe('bluecache', function () {
     });
   });
 
+  it('gets a promised value from a Function key', function () {
+    var bcache = new BlueLRU();
+
+    var key = 'jaeger';
+    function keyFn () { return key; }
+    var value = 'mark iv';
+
+    var expectedValue = value;
+    var isCached;
+
+    return bcache(keyFn, value).then(function (observedValue) {
+      return bcache._lrucache.get(key).value.then(function (cachedValue) {
+        isCached = bcache._lrucache.has(key);
+
+        expect(cachedValue).to.equal(expectedValue);
+        expect(observedValue).to.equal(expectedValue);
+        expect(isCached).to.equal(true);
+      });
+    });
+  });
+
   it('gets a promised value from a Promise key', function () {
     var bcache = new BlueLRU();
     var lcache = LRU();
