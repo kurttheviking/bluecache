@@ -103,7 +103,7 @@ Note: `ms` is milliseconds elapsed between cache invocation and final resolution
 - [breaking] Addressed thundering herd problem identified by @ketilovre and others (a minor api change but the side-effects in underlying `_lrucache` are considered breaking)
 - [breaking] Removed `#reset` instance method which was abused in practice; use a key-specific `#del` instead
 - [minor] Generalized key and priming values to any primitive, promise, or function
-- [patch] Upgraded dependency
+- [patch] Upgraded dependencies
 - [patch] Reorganized test suite
 
 
