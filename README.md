@@ -11,28 +11,26 @@ In-memory, [Promises/A+](https://promisesaplus.com/), read-through [lru-cache](h
 First, instantiate the cache &ndash; passing [options](https://github.com/kurttheviking/bluecache#options) if necessary.
 
 ```js
-var BlueLRU = require("bluecache");
+var Bluecache = require("bluecache");
 var options = {
   max: 500,
   maxAge: 1000 * 60 * 60
 };
 
-var cache = BlueLRU(options);
+var cache = Bluecache(options);
 ```
 
-Traditional cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a String for the cache key and a Promise-returning function that resolves to a value to store in the cache. The cached value can be of any type.
+Traditional cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a cache key and a priming value.
 
 ```js
-cache('key', function (_key) {
-  console.log("the invoked key => " + _key);  // "the invoked key => key"
-  return Promise.resolve('value');
+cache(Promise.resolve('cacheKey'), function (key) {
+  console.log("the invoked key is " + cacheKey);  // "the invoked key is cacheKey"
+  return Promise.resolve('dinosaurs');
 })
-.then(function (_value) {
-  console.log("the resolved value => " + _value);  // "the resolved value => value"
-})
+.then(function (value) {
+  console.log("the resolved value is " + _value);  // "the resolved value is dinosaurs"
+});
 ```
-
-Note: the priming function is invoked with the resolved key. Thus, the key can be used to determine the behavior of the priming function without storing the key in higher-level scope.
 
 
 ## Options
@@ -45,20 +43,24 @@ Options are passed to [lru-cache](https://github.com/isaacs/node-lru-cache#optio
 - `dispose`: Function called on items immediately before they are dropped from the cache; called with parameters (`key`, `value`)
 - `stale`: Allow the cache to return a stale (expired via `maxAge`) value before it is deleted
 
+Note: the underlying cache stores a memo for the promised value and a default length of 1 while the value is being resolved. After the value is first resolved, the `length` is updated to reflect the desired `options.length` passed at instantiation. (In short, total promised "max" may exceed the specified `max` while values are being resolved.)
+
 
 ## API
 
-#### cache(key, primingFunction)
+#### cache(key, primingValue)
 
-Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `primingFunction` is executed and the returned Promise resolved to its underlying value before being set in the cache and returned. (To support advanced cases, the key can also be a Promise for a String.)
+Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `primingValue` is determined and the underlying cache value is set. If the `primingValue` is a function, it is invoked with the resolved `key` as its single argument.
 
-A rejected promise is returned if either `key` or `primingFunction` is missing.
+Both `key` and `primingValue` can be a Boolean, Number, String, Symbol, Object, a function that returns one of these primitives, or a Promise for one of these primitives. By immediately caching and returning a Promise, the cache avoids a [stampede](https://en.wikipedia.org/wiki/Cache_stampede) for the underlying `primingValue`. However, a stampede may still occur against a `key` function because it is invoked on each cache call. In most cases, this problem is mitigated by using a locally available key. If you plan to remotely resolve the key you may want to consider caching the key function as well.
 
-#### cache.del(key)
+A rejected promise is returned if `key` is missing or if there is an error resolving the `primingValue`. This rejected promise is cached until expiration or a `del` operation is performed.
+
+#### cache#del(key)
 
 Returns a promise that resolves to `undefined` after deleting `key` from the cache.
 
-#### cache.on(eventName, eventHandler)
+#### cache#on(eventName, eventHandler)
 
 `eventName` is a string, corresponding to a [supported event](https://github.com/kurttheviking/bluecache#emitted-events). `eventHandler` is a function which responds to the data provided by the target event.
 
@@ -93,7 +95,16 @@ Note: `ms` is milliseconds elapsed between cache invocation and final resolution
 }
 ```
 
-Note: `ms` is milliseconds elapsed between cache invocation and final resolution of the priming function.
+Note: `ms` is milliseconds elapsed between cache invocation and final resolution of the priming value.
+
+
+## Changes from v1
+
+- [breaking] Addressed thundering herd problem identified by @ketilovre and others (a minor api change but the side-effects in underlying `_lrucache` are considered breaking)
+- [breaking] Removed `#reset` instance method which was abused in practice; use a key-specific `#del` instead
+- [minor] Generalized key and priming values to any primitive, promise, or function
+- [patch] Upgraded dependency
+- [patch] Reorganized test suite
 
 
 ## Contribute
@@ -114,3 +125,5 @@ Or, to determine unit test coverage:
 ```sh
 npm run coverage
 ```
+
+This project maintains 100% coverage of statements, branches, and functions.
