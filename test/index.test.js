@@ -112,40 +112,6 @@ describe('bluecache', function () {
     });
   });
 
-  it('resets and resolves to undefined', function () {
-    var bcache = new BlueLRU();
-
-    var key1 = 'jaeger #1';
-    var value1 = 'mark iii';
-    var valueFn1 = function () {
-      return BPromise.resolve(value1).delay(Math.random() * 10);
-    };
-
-    var key2 = 'jaeger #2';
-    var value2 = 'mark iv';
-    var valueFn2 = function () {
-      return BPromise.resolve(value2).delay(Math.random() * 10);
-    };
-
-    var observedKeys;
-    var observedResponse;
-
-    return BPromise.all([
-      bcache(key1, valueFn1),
-      bcache(key2, valueFn2)
-    ])
-    .then(function () {
-      return bcache.reset();
-    })
-    .then(function (_value) {
-      observedKeys = bcache._lrucache.keys();
-      observedResponse = _value;
-
-      expect(observedResponse).to.equal(undefined);
-      expect(observedKeys.length).to.equal(0);
-    });
-  });
-
   describe('accepts options', function () {
     it('`maxAge` with milliseconds', function () {
       var ms = 5 * 24 * 60 * 60 * 1000;
