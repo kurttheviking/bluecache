@@ -23,12 +23,12 @@ var cache = Bluecache(options);
 Traditional cache "getting" and "setting" takes place within a single call, promoting functional use. The `cache` instance is a Promise-returning function which takes two parameters: a cache key and a priming value.
 
 ```js
-cache(Promise.resolve('cacheKey'), function (key) {
-  console.log("the invoked key is " + cacheKey);  // "the invoked key is cacheKey"
-  return Promise.resolve('dinosaurs');
+cache(Promise.resolve('dinosaur'), function (key) {
+  console.log("the invoked key is " + key);  // "the invoked key is dinosaur"
+  return Promise.resolve('rar');
 })
 .then(function (value) {
-  console.log("the resolved value is " + _value);  // "the resolved value is dinosaurs"
+  console.log("the resolved value is " + value);  // "the resolved value is rar"
 });
 ```
 
