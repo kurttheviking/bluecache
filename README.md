@@ -1,7 +1,7 @@
 bluecache
 =========
 
-[![Build Status](https://travis-ci.org/kurttheviking/bluecache.svg?branch=master)](https://travis-ci.org/kurttheviking/bluecache)
+[![Build Status](https://travis-ci.org/kurttheviking/bluecache.svg?branch=master)](https://travis-ci.org/kurttheviking/bluecache) [![Coverage Status](https://coveralls.io/repos/github/kurttheviking/bluecache/badge.svg?branch=master)](https://coveralls.io/github/kurttheviking/bluecache?branch=master)
 
 In-memory, [Promises/A+](https://promisesaplus.com/), read-through [lru-cache](https://github.com/isaacs/node-lru-cache) via [bluebird](https://github.com/petkaantonov/bluebird)
 

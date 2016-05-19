@@ -1,0 +1,6 @@
+.coveralls.yml
+.jshintrc
+.gitignore
+.travis.yml
+coverage
+test

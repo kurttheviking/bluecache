@@ -39,12 +39,15 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "coveralls": "^2.11.9",
     "istanbul": "0.4.3",
     "mocha": "2.4.5",
+    "mocha-lcov-reporter": "^1.2.0",
     "sinon": "1.17.4"
   },
   "scripts": {
-    "coverage": "./node_modules/istanbul/lib/cli.js cover --report=json-summary --report=html _mocha ./test -- --recursive",
+    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly ./test -- --recursive -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coverage": "istanbul cover --report=json-summary --report=html _mocha ./test -- --recursive",
     "test": "node node_modules/mocha/bin/mocha ./test --recursive"
   }
 }
