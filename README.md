@@ -104,12 +104,12 @@ Note: `ms` is milliseconds elapsed between cache invocation and final resolution
 
 ## Changelog
 
-### From v2 to v3
+### v2 &rarr; v3
 
 - [breaking] Removed support for [interval `Object`](https://www.npmjs.com/package/interval) options in favor of [ms expression](https://www.npmjs.com/package/ms)
 - [minor] Added support for automatic pruning via `pruneInterval` option
 
-### From v1 to v2
+### v1 &rarr; v2
 
 - [breaking] Addressed thundering herd problem identified by @ketilovre and others (a minor api change but the side-effects in underlying `_lrucache` are considered breaking)
 - [breaking] Removed `#reset` instance method which was abused in practice; use a key-specific `#del` instead
