@@ -35,13 +35,17 @@ cache(Promise.resolve('dinosaur'), function (key) {
 
 ## Options
 
-Options are passed to [lru-cache](https://github.com/isaacs/node-lru-cache#options) at instantiation.
+Options are passed to [lru-cache](https://github.com/isaacs/node-lru-cache#options) at instantiation:
 
 - `max`: The maximum size of the cache, checked by applying the length function to all values in the cache
-- `maxAge`: Maximum age in ms (or a valid [interval](https://www.npmjs.com/package/interval)); lazily enforced; expired keys will return `undefined`
+- `maxAge`: Maximum age in ms (or a valid [ms expression](https://www.npmjs.com/package/ms)); lazily enforced; expired keys will return `undefined`
 - `length`: Function called to calculate the length of stored items (e.g. `function (n) { return n.length; }`); defaults to `function (n) { return 1; }`
 - `dispose`: Function called on items immediately before they are dropped from the cache; called with parameters (`key`, `value`)
 - `stale`: Allow the cache to return a stale (expired via `maxAge`) value before it is deleted
+
+In addition, the following options are specific to Bluecache:
+
+- `pruneInterval`: Interval at which the cache will pro-actively remove stale entries; by default stale items remain in memory until the next attempted read
 
 Note: the underlying cache stores a memo for the promised value and a default length of 1 while the value is being resolved. After the value is first resolved, the `length` is updated to reflect the desired `options.length` passed at instantiation. (In short, total promised "max" may exceed the specified `max` while values are being resolved.)
 

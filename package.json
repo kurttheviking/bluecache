@@ -34,8 +34,8 @@
   "homepage": "https://github.com/kurttheviking/bluecache#readme",
   "dependencies": {
     "bluebird": "3.4.0",
-    "interval": "0.1.1",
-    "lru-cache": "4.0.1"
+    "lru-cache": "4.1.1",
+    "ms": "2.0.0"
   },
   "devDependencies": {
     "chai": "3.5.0",

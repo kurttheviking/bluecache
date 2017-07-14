@@ -21,8 +21,8 @@ describe('options', function () {
     expect(bcache._lrucache.maxAge).to.equal(ms);
   });
 
-  it('`maxAge` with interval', function () {
-    var bcache = new BlueLRU({maxAge: {days: 5}});
+  it('`maxAge` with ms expression', function () {
+    var bcache = new BlueLRU({maxAge: '5d'});
     expect(bcache._lrucache.maxAge).to.equal(5 * 24 * 60 * 60 * 1000);
   });
 

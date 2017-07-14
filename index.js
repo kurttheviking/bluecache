@@ -2,8 +2,8 @@
 
 var BPromise = require('bluebird');
 var EventEmitter = require('events').EventEmitter;
-var interval = require('interval');
 var LRU = require('lru-cache');
+var ms = require('ms');
 
 function BlueCache (opts) {
   if (!(this instanceof BlueCache)) {
@@ -11,8 +11,13 @@ function BlueCache (opts) {
   }
 
   var options = opts || {};
-  if (typeof options.maxAge === 'object') {
-    options.maxAge = interval(options.maxAge);
+
+  if (typeof options.maxAge === 'string') {
+    options.maxAge = ms(options.maxAge);
+  }
+
+  if (typeof options.pruneInterval === 'string') {
+    options.pruneInterval = ms(options.pruneInterval);
   }
 
   var getMemoLength = (typeof options.length === 'function') ?
@@ -27,6 +32,10 @@ function BlueCache (opts) {
 
   var bus = new EventEmitter();
   var lrucache = LRU(options);
+
+  if (options.pruneInterval) {
+    setInterval(lrucache.prune.bind(lrucache), options.pruneInterval);
+  }
 
   function cache (key, value) {
     var tsInit = Date.now();
