@@ -43,7 +43,7 @@ Options are passed to [lru-cache](https://github.com/isaacs/node-lru-cache#optio
 - `dispose`: Function called on items immediately before they are dropped from the cache; called with parameters (`key`, `value`)
 - `stale`: Allow the cache to return a stale (expired via `maxAge`) value before it is deleted
 
-In addition, the following options are specific to Bluecache:
+In addition, the following options are specific to bluecache:
 
 - `pruneInterval`: Interval at which the cache will pro-actively remove stale entries; by default stale items remain in memory until the next attempted read
 
