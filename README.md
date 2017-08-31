@@ -58,7 +58,7 @@ Attempts to get the current value of `key` from the cache. If the `key` was prev
 
 Both `key` and `primingValue` can be a `Boolean`, `Number`, `String`, `Symbol`, `Object`, a `Function` that returns one of these primitives, or a `Promise` that resolves to one of these primitives.
 
-By immediately caching and returning a `Promise`, the cache avoids a [stampede](https://en.wikipedia.org/wiki/Cache_stampede) for the target `primingValue`. However, a stampede may occur against a `key` because it is resolved on each cache call. In most cases, this problem is mitigated by using a locally available `key`. If you plan to remotely resolve the `key` you should consider caching the `key` function as well.
+By immediately caching and returning a `Promise`, the cache avoids a [stampede](https://en.wikipedia.org/wiki/Cache_stampede) for the target `primingValue`. However, a stampede may occur for a `key` because it is resolved on each cache call. If you plan to asynchronously resolve the `key`, consider caching the `key` function as well.
 
 A rejected `Promise` is returned if `key` is empty (`null` or `undefined`) or if there is an error resolving the `primingValue`.
 
