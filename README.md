@@ -54,15 +54,17 @@ Note: the underlying cache stores a memo for the promised value and a default le
 
 ### cache(`key`, `primingValue`)
 
-Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `primingValue` is determined and the underlying cache value is set. If the `primingValue` is a function, it is invoked with the resolved `key` as its single argument.
+Attempts to get the current value of `key` from the cache. If the `key` was previously used, the "recently-used"-ness of the `key` is updated and the cached value is returned. If the `key` does not exist, the `primingValue` is determined and the underlying cache value is set. If the `primingValue` is a function, it is invoked with the resolved `key` (resolved as a `String`) as its single argument.
 
-Both `key` and `primingValue` can be a Boolean, Number, String, Symbol, Object, a function that returns one of these primitives, or a Promise for one of these primitives. By immediately caching and returning a Promise, the cache avoids a [stampede](https://en.wikipedia.org/wiki/Cache_stampede) for the underlying `primingValue`. However, a stampede may still occur against a `key` function because it is invoked on each cache call. In most cases, this problem is mitigated by using a locally available key. If you plan to remotely resolve the key you may want to consider caching the key function as well.
+Both `key` and `primingValue` can be a `Boolean`, `Number`, `String`, `Symbol`, `Object`, a `Function` that returns one of these primitives, or a `Promise` that resolves to one of these primitives.
 
-A rejected promise is returned if `key` is missing or if there is an error resolving the `primingValue`. This rejected promise is cached until expiration or eviction.
+By immediately caching and returning a `Promise`, the cache avoids a [stampede](https://en.wikipedia.org/wiki/Cache_stampede) from immediately repetitive calls for the `primingValue`. However, a stampede may occur against a `key` because it is resolved on each cache call. In most cases, this problem is mitigated by using a locally available `key`. If you plan to remotely resolve the `key` you should consider caching the `key` function as well.
+
+A rejected `Promise` is returned if `key` is empty (`null` or `undefined`) or if there is an error resolving the `primingValue`.
 
 ### cache#del(`key`)
 
-Returns a promise that resolves to `undefined` after deleting `key` from the cache.
+Returns a `Promise` that resolves to `undefined` after deleting `key` from the cache.
 
 ### cache#on(`eventName`, `eventHandler`)
 
