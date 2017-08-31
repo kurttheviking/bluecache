@@ -39,11 +39,8 @@ describe('cache#on', () => {
     });
 
     it('emits with minimal delay', () => {
-      const isNotNegative = observations.ms > -1;
-      const isNotDelayed = observations.ms < 11;
-
-      expect(isNotNegative).to.equal(true);
-      expect(isNotDelayed).to.equal(true);
+      expect(observations.ms).to.be.above(-1);
+      expect(observations.ms).to.be.below(11);
     });
   });
 
@@ -77,11 +74,8 @@ describe('cache#on', () => {
     });
 
     it('emits with minimal delay', () => {
-      const isNotNegative = observations.ms > -1;
-      const isNotDelayed = observations.ms < 11;
-
-      expect(isNotNegative).to.equal(true);
-      expect(isNotDelayed).to.equal(true);
+      expect(observations.ms).to.be.above(-1);
+      expect(observations.ms).to.be.below(11);
     });
   });
 });
