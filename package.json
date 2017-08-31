@@ -1,6 +1,6 @@
 {
   "name": "bluecache",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Read-through, in-memory, least recently used (lru) cache",
   "license": "MIT",
   "main": "index.js",
