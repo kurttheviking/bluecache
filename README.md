@@ -52,7 +52,7 @@ Note: the underlying cache stores a memo for the promised value and a default le
 
 ## API
 
-### cache(key, primingValue)
+### cache(`key`, `primingValue`)
 
 Attempts to get the current value of `key` from the cache. If the key exists, the "recently-used"-ness of the key is updated and the cached value is returned. If the key does not exist, the `primingValue` is determined and the underlying cache value is set. If the `primingValue` is a function, it is invoked with the resolved `key` as its single argument.
 
@@ -60,11 +60,11 @@ Both `key` and `primingValue` can be a Boolean, Number, String, Symbol, Object, 
 
 A rejected promise is returned if `key` is missing or if there is an error resolving the `primingValue`. This rejected promise is cached until expiration or eviction.
 
-### cache#del(key)
+### cache#del(`key`)
 
 Returns a promise that resolves to `undefined` after deleting `key` from the cache.
 
-### cache#on(eventName, eventHandler)
+### cache#on(`eventName`, `eventHandler`)
 
 `eventName` is a string, corresponding to a [supported event](https://github.com/kurttheviking/bluecache#emitted-events). `eventHandler` is a function which responds to the data provided by the target event.
 
