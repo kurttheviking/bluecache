@@ -1,89 +1,87 @@
-/* global beforeEach, describe, it */
-'use strict';
+/* global  describe, it, beforeEach */
 
-var chai = require('chai');
+const delay = require('delay');
+const expect = require('chai').expect;
 
-var BPromise = require('bluebird');
-var BlueLRU = require('../index');
+const Bluecache = require('../index');
 
-var expect = chai.expect;
+describe('cache#on', () => {
+  describe('cache:hit', () => {
+    const key = 'jaeger';
+    const value = 'mark iii';
 
-describe('events', function () {
-  describe('cache:hit', function () {
-    var key = 'jaeger';
-    var value = 'mark iii';
+    const observations = {};
 
-    var delayMS;
-    var observedKey;
-    var observedMS;
+    beforeEach((done) => {
+      delete observations.key;
+      delete observations.ms;
 
-    beforeEach(function (done) {
-      var bcache = new BlueLRU();
-      var valueFn = function () {
-        delayMS = Math.ceil(Math.random() * 10);
-        return BPromise.resolve(value).delay(delayMS);
-      };
+      const cache = new Bluecache();
+      const valueFn = () => delay(Math.ceil(Math.random() * 10)).then(() => value);
 
-      bcache.on('cache:hit', function (data) {
-        observedKey = data.key;
-        observedMS = data.ms;
+      cache.on('cache:hit', (data) => {
+        observations.key = data.key;
+        observations.ms = data.ms;
 
         done();
       });
 
-      bcache(key, valueFn).then(function () {
-        bcache(key, valueFn);
-      });
+      cache(key, valueFn).then(() => cache(key, valueFn));
     });
 
-    it('emits with correct properties', function () {
-      expect(observedKey).to.equal(key);
+    it('emits with valid parameters', () => {
+      expect(typeof observations.key).to.equal('string');
+      expect(typeof observations.ms).to.equal('number');
     });
 
-    it('emits with minimal delay', function () {
-      var isNonZero = observedMS > -1;
-      var isNotTooDelayed = observedMS < 5;
+    it('emits with resolved key', () => {
+      expect(observations.key).to.equal(key);
+    });
 
-      expect(isNonZero).to.equal(true);
-      expect(isNotTooDelayed).to.equal(true);
+    it('emits with minimal delay', () => {
+      const isNotNegative = observations.ms > -1;
+      const isNotDelayed = observations.ms < 11;
+
+      expect(isNotNegative).to.equal(true);
+      expect(isNotDelayed).to.equal(true);
     });
   });
 
-  describe('cache:miss', function () {
-    var key = 'jaeger';
-    var value = 'mark iii';
+  describe('cache:miss', () => {
+    const key = 'jaeger';
+    const value = 'mark iii';
 
-    var delayMS;
-    var observedKey;
-    var observedMS;
+    const observations = {};
 
-    beforeEach(function (done) {
-      var bcache = new BlueLRU();
-      var valueFn = function () {
-        delayMS = Math.ceil(Math.random() * 10);
-        return BPromise.resolve(value).delay(delayMS);
-      };
+    beforeEach((done) => {
+      const cache = new Bluecache();
+      const valueFn = () => delay(Math.ceil(Math.random() * 10)).then(() => value);
 
-      bcache.on('cache:miss', function (data) {
-        observedKey = data.key;
-        observedMS = data.ms;
+      cache.on('cache:miss', (data) => {
+        observations.key = data.key;
+        observations.ms = data.ms;
 
         done();
       });
 
-      bcache(key, valueFn);
+      cache(key, valueFn);
     });
 
-    it('emits with correct properties', function () {
-      expect(observedKey).to.equal(key);
+    it('emits with valid parameters', () => {
+      expect(typeof observations.key).to.equal('string');
+      expect(typeof observations.ms).to.equal('number');
     });
 
-    it('emits with minimal delay', function () {
-      var isAtLeastDelayMS = observedMS > (delayMS - 1);
-      var isNotTooDelayed = observedMS < (delayMS + 5);
+    it('emits with resolved key', () => {
+      expect(observations.key).to.equal(key);
+    });
 
-      expect(isAtLeastDelayMS).to.equal(true);
-      expect(isNotTooDelayed).to.equal(true);
+    it('emits with minimal delay', () => {
+      const isNotNegative = observations.ms > -1;
+      const isNotDelayed = observations.ms < 11;
+
+      expect(isNotNegative).to.equal(true);
+      expect(isNotDelayed).to.equal(true);
     });
   });
 });

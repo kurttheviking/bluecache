@@ -1,41 +1,29 @@
 /* global  describe, it */
-'use strict';
 
-var chai = require('chai');
+const expect = require('chai').expect;
 
-var BlueLRU = require('../index');
+const Bluecache = require('../index');
 
-var expect = chai.expect;
+describe('cache#del', () => {
+  it('removes" an item from the underlying cache', () => {
+    const cache = new Bluecache();
 
-describe('#del', function () {
-  it('"removes" an item from the underlying cache', function () {
-    var bcache = new BlueLRU();
+    const key = 'jaeger';
+    const value = 'mark iv';
 
-    var key = 'jaeger';
-    var value = 'mark iv';
-
-    var observedValue;
-
-    return bcache(key, value).then(function () {
-      return bcache.del(key);
-    })
-    .then(function () {
-      observedValue = bcache._lrucache.get(key);
-      expect(observedValue).to.equal(undefined);
+    return cache(key, value).then(() => cache.del(key)).then(() => {
+      expect(cache._lrucache.get(key)).to.equal(undefined);
     });
   });
 
-  it('resolves to undefined', function () {
-    var bcache = new BlueLRU();
+  it('resolves to undefined', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = 'mark iv';
+    const key = 'jaeger';
+    const value = 'mark iv';
 
-    return bcache(key, value).then(function () {
-      return bcache.del(key);
-    })
-    .then(function (finalValue) {
-      expect(finalValue).to.equal(undefined);
+    return cache(key, value).then(() => cache.del(key)).then((out) => {
+      expect(out).to.equal(undefined);
     });
   });
 });

@@ -1,53 +1,51 @@
 {
   "name": "bluecache",
   "version": "3.0.0",
-  "description": "In-memory, Promises/A+, read-through lru-cache",
+  "description": "Read-through, in-memory, least recently used (lru) cache",
   "license": "MIT",
   "main": "index.js",
-  "keywords": [
-    "lru cache",
-    "read-through cache",
-    "in-memory cache",
-    "promise",
-    "promises-a",
-    "promises-aplus"
-  ],
-  "author": {
-    "name": "Kurt Ericson",
-    "email": "kurttheviking@outlook.com",
-    "url": "http://github.com/kurttheviking"
+  "scripts": {
+    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly ./test -- --recursive -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coverage": "istanbul cover --report=json-summary --report=html _mocha ./test -- --recursive",
+    "test": "node node_modules/mocha/bin/mocha ./test --recursive"
   },
-  "contributors": [
-    {
-      "name": "Kurt Ericson",
-      "email": "kurttheviking@outlook.com",
-      "url": "https://github.com/kurttheviking"
-    }
-  ],
+  "engines": {
+    "node": ">4.x"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/kurttheviking/bluecache.git"
+  },
+  "keywords": [
+    "lru cache",
+    "least recently used cache",
+    "read-through cache",
+    "in-memory cache"
+  ],
+  "author": {
+    "name": "Kurt Ericson",
+    "email": "github@kurttheviking.com",
+    "url": "http://github.com/kurttheviking"
   },
   "bugs": {
     "url": "https://github.com/kurttheviking/bluecache/issues"
   },
   "homepage": "https://github.com/kurttheviking/bluecache#readme",
   "dependencies": {
-    "bluebird": "3.4.0",
     "lru-cache": "4.1.1",
     "ms": "2.0.0"
   },
   "devDependencies": {
-    "chai": "3.5.0",
-    "coveralls": "2.11.9",
-    "istanbul": "0.4.3",
-    "mocha": "2.4.5",
-    "mocha-lcov-reporter": "1.2.0",
-    "sinon": "1.17.4"
-  },
-  "scripts": {
-    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly ./test -- --recursive -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "coverage": "istanbul cover --report=json-summary --report=html _mocha ./test -- --recursive",
-    "test": "node node_modules/mocha/bin/mocha ./test --recursive"
+    "chai": "4.1.1",
+    "coveralls": "2.13.1",
+    "delay": "2.0.0",
+    "eslint": "4.5.0",
+    "eslint-config-airbnb-base": "11.3.2",
+    "eslint-plugin-import": "2.7.0",
+    "istanbul": "0.4.5",
+    "mocha": "3.5.0",
+    "mocha-eslint": "4.1.0",
+    "mocha-lcov-reporter": "1.3.0",
+    "sinon": "3.2.1"
   }
 }

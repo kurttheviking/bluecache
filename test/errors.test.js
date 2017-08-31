@@ -1,36 +1,52 @@
-/* global describe, it */
-'use strict';
+/* global  describe, it */
 
-var chai = require('chai');
+const expect = require('chai').expect;
 
-var BPromise = require('bluebird');
-var BlueLRU = require('../index');
+const Bluecache = require('../index');
 
-var expect = chai.expect;
+describe('errors', () => {
+  const cache = new Bluecache();
 
-describe('errors', function () {
-  var bcache = new BlueLRU();
+  // [KE] if a test below is incorrectly written, the catch block will never be called and the test
+  //      will appear to pass, even though the lack of an error should itself be an error; so,
+  //      inject a known failure mode so we can verify the expected failure mode was reached
+  function failedTestFn() {
+    throw new Error('test failed');
+  }
 
-  it('rejects with error if invoked without key', function () {
-    return bcache().catch(function (err) {
-      expect(err).to.match(/missing required parameter: key/);
+  it('rejects with error if invoked with undefined key', () => {
+    const key = undefined;
+
+    return cache(key, Date.now().toString(36)).then(failedTestFn).catch((err) => {
+      expect(err).to.match(/missing key/);
     });
   });
 
-  it('stores the rejected promise on error', function () {
-    var key = 'jaeger';
-    var valueFn = function () {
-      return new BPromise(function () {
-        throw new Error('processing error');
-      });
-    };
+  it('rejects with error if invoked with null key', () => {
+    const key = null;
 
-    return bcache(key, valueFn).catch(function (err) {
-      expect(err).to.match(/processing error/);
+    return cache(key, Date.now().toString(36)).then(failedTestFn).catch((err) => {
+      expect(err).to.match(/missing key/);
+    });
+  });
 
-      return bcache._lrucache.get(key).value.catch(function (err) {
-        expect(err).to.match(/processing error/);
-      });
+  it('does not store an errored function value', () => {
+    const key = 'jaeger';
+    const valueFn = () => { throw new Error('bad value'); };
+
+    return cache(key, valueFn).then(failedTestFn).catch((err) => {
+      expect(err).to.match(/bad value/);
+      expect(cache._lrucache.has(key)).to.equal(false);
+    });
+  });
+
+  it('does not store a rejected promise on error', () => {
+    const key = 'jaeger';
+    const valueFn = () => Promise.reject('bad value');
+
+    return cache(key, valueFn).then(failedTestFn).catch((err) => {
+      expect(err).to.match(/bad value/);
+      expect(cache._lrucache.has(key)).to.equal(false);
     });
   });
 });

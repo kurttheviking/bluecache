@@ -1,233 +1,164 @@
 /* global describe, it */
-'use strict';
 
-var chai = require('chai');
-var sinon = require('sinon');
+const delay = require('delay');
+const expect = require('chai').expect;
+const sinon = require('sinon');
 
-var BPromise = require('bluebird');
-var BlueLRU = require('../index');
+const Bluecache = require('../index');
 
-var expect = chai.expect;
+describe('cache parameter: value', () => {
+  it('accepts a null value', () => {
+    const cache = new Bluecache();
 
-describe('cache value', function () {
-  it('accepts a null value', function () {
-    var bcache = new BlueLRU();
+    const key = 'jaeger';
+    const value = null;
 
-    var key = 'jaeger';
-    var value = null;
+    return cache(key, value).then((out) => {
+      const isCached = cache._lrucache.has(key);
 
-    var expectedValue = value;
-    var observedValue;
-    var isCached;
-
-    return bcache(key, value).then(function (_value) {
-      return bcache._lrucache.get(key).value.then(function (cachedValue) {
-        observedValue = _value;
-        isCached = bcache._lrucache.has(key);
-
-        expect(cachedValue).to.equal(expectedValue);
-        expect(observedValue).to.equal(expectedValue);
-        expect(isCached).to.equal(true);
-      });
+      expect(isCached).to.equal(true);
+      expect(out).to.equal(value);
+      expect(cache._lrucache.get(key).value).to.equal(value);
     });
   });
 
-  it('accepts an undefined value', function () {
-    var bcache = new BlueLRU();
+  it('accepts an undefined value', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
+    const key = 'jaeger';
+    const value = undefined;
 
-    var expectedValue;
-    var observedValue;
-    var isCached;
+    return cache(key, value).then((out) => {
+      const isCached = cache._lrucache.has(key);
 
-    return bcache(key).then(function (_value) {
-      return bcache._lrucache.get(key).value.then(function (cachedValue) {
-        observedValue = _value;
-        isCached = bcache._lrucache.has(key);
-
-        expect(cachedValue).to.equal(expectedValue);
-        expect(observedValue).to.equal(expectedValue);
-        expect(isCached).to.equal(true);
-      });
+      expect(isCached).to.equal(true);
+      expect(out).to.equal(value);
+      expect(cache._lrucache.get(key).value).to.equal(value);
     });
   });
 
-  it('accepts a primitive value', function () {
-    var bcache = new BlueLRU();
+  it('accepts a String value', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = 'mark iv';
+    const key = 'jaeger';
+    const value = 'mark iv';
 
-    var expectedValue = value;
-    var observedValue;
-    var isCached;
+    return cache(key, value).then((out) => {
+      const isCached = cache._lrucache.has(key);
 
-    return bcache(key, value).then(function (_value) {
-      return bcache._lrucache.get(key).value.then(function (cachedValue) {
-        observedValue = _value;
-        isCached = bcache._lrucache.has(key);
-
-        expect(cachedValue).to.equal(expectedValue);
-        expect(observedValue).to.equal(expectedValue);
-        expect(isCached).to.equal(true);
-      });
+      expect(isCached).to.equal(true);
+      expect(out).to.equal(value);
+      expect(cache._lrucache.get(key).value).to.equal(value);
     });
   });
 
-  it('accepts an Object value', function () {
-    var bcache = new BlueLRU();
+  it('accepts an Object value', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = {type: 'mark iv'};
+    const key = 'jaeger';
+    const value = { type: 'mark iv' };
 
-    var expectedValue = value;
-    var observedValue;
-    var isCached;
+    return cache(key, value).then((out) => {
+      const isCached = cache._lrucache.has(key);
 
-    return bcache(key, value).then(function (_value) {
-      return bcache._lrucache.get(key).value.then(function (cachedValue) {
-        observedValue = _value;
-        isCached = bcache._lrucache.has(key);
-
-        expect(cachedValue).to.deep.equal(expectedValue);
-        expect(observedValue).to.deep.equal(expectedValue);
-        expect(isCached).to.equal(true);
-      });
+      expect(isCached).to.equal(true);
+      expect(out).to.equal(value);
+      expect(cache._lrucache.get(key).value).to.deep.equal(value);
     });
   });
 
-  it('accepts a Promise value', function () {
-    var bcache = new BlueLRU();
+  it('accepts a Promise<String> value', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = 'mark iv';
+    const key = 'jaeger';
+    const value = 'mark iv';
 
-    var expectedValue = value;
-    var observedValue;
-    var isCached;
+    return cache(key, Promise.resolve(value)).then((out) => {
+      const isCached = cache._lrucache.has(key);
 
-    return bcache(key, BPromise.resolve(value)).then(function (_value) {
-      return bcache._lrucache.get(key).value.then(function (cachedValue) {
-        observedValue = _value;
-        isCached = bcache._lrucache.has(key);
-
-        expect(cachedValue).to.equal(expectedValue);
-        expect(observedValue).to.equal(expectedValue);
-        expect(isCached).to.equal(true);
-      });
+      expect(isCached).to.equal(true);
+      expect(out).to.equal(value);
+      expect(cache._lrucache.get(key).value).to.equal(value);
     });
   });
 
-  it('accepts a Function returning a primitive value', function () {
-    var bcache = new BlueLRU();
+  it('accepts a Function=>String value', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = 'mark iv';
-    function valueFn () { return BPromise.resolve(value); }
+    const key = 'jaeger';
+    const value = 'mark iv';
 
-    var expectedValue = value;
-    var observedValue;
-    var isCached;
+    return cache(key, () => value).then((out) => {
+      const isCached = cache._lrucache.has(key);
 
-    return bcache(key, valueFn).then(function (_value) {
-      return bcache._lrucache.get(key).value.then(function (cachedValue) {
-        observedValue = _value;
-        isCached = bcache._lrucache.has(key);
-
-        expect(cachedValue).to.equal(expectedValue);
-        expect(observedValue).to.equal(expectedValue);
-        expect(isCached).to.equal(true);
-      });
+      expect(isCached).to.equal(true);
+      expect(out).to.equal(value);
+      expect(cache._lrucache.get(key).value).to.equal(value);
     });
   });
 
-  it('accepts a Function returning a Promise value', function () {
-    var bcache = new BlueLRU();
+  it('accepts Function=>Promise<String> value', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = 'mark iv';
+    const key = 'jaeger';
+    const value = 'mark iv';
 
-    var expectedValue = value;
-    var observedValue;
-    var isCached;
+    return cache(key, () => Promise.resolve(value)).then((out) => {
+      const isCached = cache._lrucache.has(key);
 
-    return bcache(key, value).then(function (_value) {
-      return bcache._lrucache.get(key).value.then(function (cachedValue) {
-        observedValue = _value;
-        isCached = bcache._lrucache.has(key);
-
-        expect(cachedValue).to.equal(expectedValue);
-        expect(observedValue).to.equal(expectedValue);
-        expect(isCached).to.equal(true);
-      });
+      expect(isCached).to.equal(true);
+      expect(out).to.equal(value);
+      expect(cache._lrucache.get(key).value).to.equal(value);
     });
   });
 
-  it('invokes a value function once on successive cache calls', function () {
-    var bcache = new BlueLRU();
+  it('invokes a value function once on successive cache calls', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = 'mark iv';
-    var valueFn = sinon.stub().returns(value);
+    const key = 'jaeger';
+    const value = 'mark iv';
+    const valueFn = sinon.stub().returns(value);
 
-    var expectedValue = value;
-
-    return BPromise.all([
-      bcache(key, valueFn),
-      BPromise.delay(1, bcache(key, valueFn)),
-      BPromise.delay(3, bcache(key, valueFn)),
-      BPromise.delay(5, bcache(key, valueFn))
-    ])
-    .then(function (results) {
-      results.map(function (observedValue) {
-        expect(observedValue).to.equal(expectedValue);
-      });
-
+    return Promise.all([
+      cache(key, valueFn),
+      delay(1).then(() => cache(key, valueFn)),
+      delay(3).then(() => cache(key, valueFn)),
+      delay(5).then(() => cache(key, valueFn))
+    ]).then((results) => {
+      results.map(observed => expect(observed).to.equal(value));
       expect(valueFn.callCount).to.equal(1);
     });
   });
 
-  it('invokes a value function once on immediate cache calls', function () {
-    var bcache = new BlueLRU();
+  it('invokes a value function once on immediate cache calls', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = 'mark iv';
-    var valueFn = sinon.stub().returns(BPromise.delay(5, value));
+    const key = 'jaeger';
+    const value = 'mark iv';
+    const valueFn = sinon.stub().returns(value);
 
-    var expectedValue = value;
-
-    return BPromise.all([
-      bcache(key, valueFn),
-      bcache(key, valueFn),
-      bcache(key, valueFn),
-      bcache(key, valueFn)
-    ])
-    .then(function (results) {
-      results.map(function (observedValue) {
-        expect(observedValue).to.equal(expectedValue);
-      });
-
+    return Promise.all([
+      cache(key, valueFn),
+      cache(key, valueFn),
+      cache(key, valueFn),
+      cache(key, valueFn)
+    ]).then((results) => {
+      results.map(observed => expect(observed).to.equal(value));
       expect(valueFn.callCount).to.equal(1);
     });
   });
 
-  it('invokes a value function with the key', function () {
-    var bcache = new BlueLRU();
+  it('invokes a value function with the key', () => {
+    const cache = new Bluecache();
 
-    var key = 'jaeger';
-    var value = 'mark iv';
+    const key = 'jaeger';
+    const value = 'mark iv';
+    const valueFn = sinon.stub().returns(value);
 
-    var expectedKey = key;
-    var observedKey;
+    return cache(key, valueFn).then(() => {
+      const args = valueFn.getCall(0).args;
 
-    function valueFn (_key) {
-      observedKey = _key;
-      return value;
-    }
-
-    return bcache(key, valueFn).then(function () {
-      expect(observedKey).to.equal(expectedKey);
+      expect(args[0]).to.equal(key);
     });
   });
 });

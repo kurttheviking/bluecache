@@ -1,5 +1,5 @@
 .coveralls.yml
-.jshintrc
+.eslintrc
 .gitignore
 .travis.yml
 coverage
