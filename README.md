@@ -28,7 +28,7 @@ cache(Promise.resolve('dinosaur'), (key) => {
   return Promise.resolve('rar');
 })
 .then((value) => {
-  console.log(`the invoked key is: ${value}`); // "the resolved value is: rar"
+  console.log(`the resolved value is: ${value}`); // "the resolved value is: rar"
 });
 ```
 
