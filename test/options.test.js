@@ -1,4 +1,5 @@
 /* global describe, it */
+/* eslint-disable no-underscore-dangle, global-require */
 
 const expect = require('chai').expect;
 
@@ -6,7 +7,7 @@ const Bluecache = require('../index');
 
 describe('options: maxAge', () => {
   it('does not require the new keyword', () => {
-    const cache = require('../index')(); // eslint-disable-line global-require
+    const cache = require('../index')();
 
     expect(cache).to.be.a('function');
     expect(global.cache).to.equal(undefined);

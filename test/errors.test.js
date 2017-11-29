@@ -1,4 +1,5 @@
 /* global  describe, it */
+/* eslint-disable no-underscore-dangle, global-require */
 
 const expect = require('chai').expect;
 
@@ -42,7 +43,7 @@ describe('errors', () => {
 
   it('does not store a rejected promise on error', () => {
     const key = 'jaeger';
-    const valueFn = () => Promise.reject('bad value');
+    const valueFn = () => Promise.reject(new Error('bad value'));
 
     return cache(key, valueFn).then(failedTestFn).catch((err) => {
       expect(err).to.match(/bad value/);

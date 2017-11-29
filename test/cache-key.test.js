@@ -1,4 +1,5 @@
 /* global describe, it */
+/* eslint-disable no-underscore-dangle, global-require */
 
 const expect = require('chai').expect;
 
