@@ -66,9 +66,9 @@ A rejected `Promise` is returned if `key` is empty (`null` or `undefined`) or if
 
 Returns a `Promise` that resolves to `undefined` after deleting `key` from the cache.
 
-### reset()
+### cache#reset()
 
-Clears the cache entirely, throwing away all values.
+Clears the cache entirely, throwing away all values. Returns a `Promise` that resolves to `null` after the cache has been reset.
 
 ### cache#on(`eventName`, `eventHandler`)
 
