@@ -27,6 +27,12 @@
     "email": "github@kurttheviking.com",
     "url": "http://github.com/kurttheviking"
   },
+  "contributors": [
+    {
+      "name": "Ismael Rivera",
+      "url": "https://github.com/ismriv"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/kurttheviking/bluecache/issues"
   },

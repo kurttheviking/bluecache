@@ -134,6 +134,8 @@ Note: `ms` is milliseconds elapsed between cache invocation and final resolution
 
 PRs are welcome! For bugs, please include a failing test which passes when your PR is applied.
 
+Thanks @ismriv!
+
 
 ## Tests
 
