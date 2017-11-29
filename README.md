@@ -66,6 +66,10 @@ A rejected `Promise` is returned if `key` is empty (`null` or `undefined`) or if
 
 Returns a `Promise` that resolves to `undefined` after deleting `key` from the cache.
 
+### reset()
+
+Clears the cache entirely, throwing away all values.
+
 ### cache#on(`eventName`, `eventHandler`)
 
 `eventName` is a string, corresponding to a [supported event](https://github.com/kurttheviking/bluecache#emitted-events). `eventHandler` is a function which responds to the data provided by the target event.
