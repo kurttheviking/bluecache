@@ -76,7 +76,7 @@ Clears the cache entirely, throwing away all values. Returns a `Promise` that re
 
 ```js
 cache.on('cache:hit', (data) => {
-  console.log(`The cache took ${data.ms} milliseconds to respond to key: ${key}.`);
+  console.log(`The cache took ${data.ms} milliseconds to respond to key: ${data.key}.`);
 });
 ```
 
